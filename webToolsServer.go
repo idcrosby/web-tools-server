@@ -48,9 +48,11 @@ func main() {
 
 func defaultHandler(rw http.ResponseWriter, req *http.Request) {
 	InfoLog.Println("defaultHandler called")
-	var mainTemplate, err = template.ParseFiles("main.html")
+	//var mainTemplate, err = template.ParseFiles("main.html")
+	var webToolsTemplate, err = template.ParseFiles("webToolsForm.html")
 	check(err)
-	mainTemplate.Execute(rw, nil)
+	//mainTemplate.Execute(rw, nil)
+	webToolsTemplate.Execute(rw, nil)
 }
 
 func base64EncodeHandler(rw http.ResponseWriter, req *http.Request) {
@@ -62,7 +64,11 @@ func base64EncodeHandler(rw http.ResponseWriter, req *http.Request) {
 		return
 	}
 	encoded := myTools.Base64Encode([]byte(encode))
-	rw.Write([]byte(encoded))
+	//rw.Write([]byte(encoded))
+	var data = Data{Result: encoded}
+	var resultTemplate, err = template.ParseFiles("webToolsResult.html")
+	check(err)
+	resultTemplate.Execute(rw, data) 
 }
 
 func base64DecodeHandler(rw http.ResponseWriter, req *http.Request) {
