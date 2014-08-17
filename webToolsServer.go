@@ -146,3 +146,7 @@ func requestAsString(request *http.Request) []byte {
 
 	return buffer.Bytes()
 }
+
+type Data struct {
+	Result string
+}
