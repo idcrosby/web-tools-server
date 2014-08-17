@@ -10,6 +10,7 @@ import (
 	"net/http/httputil"
 	"net/url"
 	"os"
+	"strconv"
 	"text/template"
 	"time"
 )
@@ -55,6 +56,7 @@ func defaultHandler(rw http.ResponseWriter, req *http.Request) {
 	webToolsTemplate.Execute(rw, nil)
 }
 
+// TODO Merge these handlers
 func base64EncodeHandler(rw http.ResponseWriter, req *http.Request) {
 	InfoLog.Println("base64EncodeHandler called")
 	encode := retrieveParam(req, "data")
@@ -73,32 +75,95 @@ func base64EncodeHandler(rw http.ResponseWriter, req *http.Request) {
 
 func base64DecodeHandler(rw http.ResponseWriter, req *http.Request) {
 	InfoLog.Println("base64DecodeHandler called")
-
+	decode := retrieveParam(req, "data")
+	if (len(decode) == 0) {
+		ErrorLog.Println("No data found.")
+		rw.WriteHeader(400)
+		return
+	}
+	decoded := myTools.Base64Decode(decode)
+	var data = Data{Result: string(decoded)}
+	var resultTemplate, err = template.ParseFiles("webToolsResult.html")
+	check(err)
+	resultTemplate.Execute(rw, data)
 }
 
 func validateJsonHandler(rw http.ResponseWriter, req *http.Request) {
 	InfoLog.Println("validateJsonHandler called")
+	input := retrieveParam(req, "data")
+	if (len(input) == 0) {
+		ErrorLog.Println("No data found.")
+		rw.WriteHeader(400)
+		return
+	}
+	json := myTools.ValidateJson([]byte(input))
+	var data = Data{Result: string(json)}
+	var resultTemplate, err = template.ParseFiles("webToolsResult.html")
+	check(err)
+	resultTemplate.Execute(rw, data)
 
 }
 
 func md5HashHandler(rw http.ResponseWriter, req *http.Request) {
 	InfoLog.Println("md5HashHandler called")
-
+	input := retrieveParam(req, "data")
+	if (len(input) == 0) {
+		ErrorLog.Println("No data found.")
+		rw.WriteHeader(400)
+		return
+	}
+	hash := myTools.Md5Hash([]byte(input))
+	var data = Data{Result: hash}
+	var resultTemplate, err = template.ParseFiles("webToolsResult.html")
+	check(err)
+	resultTemplate.Execute(rw, data)
 }
 
 func sha1HashHandler(rw http.ResponseWriter, req *http.Request) {
 	InfoLog.Println("sha1HashHandler called")
-
+	input := retrieveParam(req, "data")
+	if (len(input) == 0) {
+		ErrorLog.Println("No data found.")
+		rw.WriteHeader(400)
+		return
+	}
+	hash := myTools.Sha1Hash([]byte(input))
+	var data = Data{Result: hash}
+	var resultTemplate, err = template.ParseFiles("webToolsResult.html")
+	check(err)
+	resultTemplate.Execute(rw, data)
 }
 
 func convertTimeToEpochHandler(rw http.ResponseWriter, req *http.Request) {
 	InfoLog.Println("convertTimeToEpochHandler called")
-
+	input := retrieveParam(req, "data")
+	if (len(input) == 0) {
+		ErrorLog.Println("No data found.")
+		rw.WriteHeader(400)
+		return
+	}
+	myTime, _ := time.Parse("2006-01-02 15:04:05 -0700 MST", string(input))
+	epochTime := myTools.ConvertTimeToEpoch(myTime)
+	var data = Data{Result: strconv.FormatInt(epochTime, 10)}
+	var resultTemplate, err = template.ParseFiles("webToolsResult.html")
+	check(err)
+	resultTemplate.Execute(rw, data)
 }
 
 func convertTimeFromEpochHandler(rw http.ResponseWriter, req *http.Request) {
 	InfoLog.Println("convertTimeFromEpochHandler called")
-
+	input := retrieveParam(req, "data")
+	if (len(input) == 0) {
+		ErrorLog.Println("No data found.")
+		rw.WriteHeader(400)
+		return
+	}
+	epochTime, _ := strconv.ParseInt(input, 10, 64	)
+	time := myTools.ConvertTimeFromEpoch(epochTime)
+	var data = Data{Result: time.String()}
+	var resultTemplate, err = template.ParseFiles("webToolsResult.html")
+	check(err)
+	resultTemplate.Execute(rw, data)
 }
 
 // Error Handler Wrapper
