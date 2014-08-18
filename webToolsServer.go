@@ -49,11 +49,9 @@ func main() {
 
 func defaultHandler(rw http.ResponseWriter, req *http.Request) {
 	InfoLog.Println("defaultHandler called")
-	//var mainTemplate, err = template.ParseFiles("main.html")
 	var webToolsTemplate, err = template.ParseFiles("webToolsForm.html")
 	check(err)
 	var data = Data{}
-	//mainTemplate.Execute(rw, nil)
 	webToolsTemplate.Execute(rw, data)
 }
 
