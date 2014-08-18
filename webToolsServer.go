@@ -61,14 +61,17 @@ func defaultHandler(rw http.ResponseWriter, req *http.Request) {
 func base64EncodeHandler(rw http.ResponseWriter, req *http.Request) {
 	InfoLog.Println("base64EncodeHandler called")
 	encode := retrieveParam(req, "data")
+	var data = Data{}
 	if (len(encode) == 0) {
 		ErrorLog.Println("No data found.")
-		rw.WriteHeader(400)
-		return
-	}
-	encoded := myTools.Base64Encode([]byte(encode))
-	//rw.Write([]byte(encoded))
-	var data = Data{EncodeResult: encoded, EncodeValid: true}
+		// rw.WriteHeader(400)
+		data = Data{EncodeResult: "", EncodeValid: false}
+		// return
+	} else {
+		encoded := myTools.Base64Encode([]byte(encode))
+		//rw.Write([]byte(encoded))
+		data = Data{EncodeResult: encoded, EncodeValid: true}
+	}	
 	// var resultTemplate, err = template.ParseFiles("webToolsForm.html")
 	var resultTemplate, err = template.ParseFiles("webToolsForm.html")
 	check(err)
