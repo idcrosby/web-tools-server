@@ -3,83 +3,85 @@
 		<meta http-equiv='Content-Type' content='text/html; charset=UTF-8' /> 
 	</head>
 	<body>
-		<form name="Encode" action="/base64Encode" method="get">
-			Base 64 Encode: <input type="text" name="data">
-			<input type="submit" value="Encode">
-		</form>
-		<textarea name="encodeResult" disabled rows="1" cols="50">{{.EncodeResult}}</textarea>
+		<div id="EncodeDiv">
+			<form name="Encode" action="/base64Encode" method="get">
+				Base 64 Encode: <input type="text" name="data">
+				<input type="submit" value="Encode">
+			</form>
+			<textarea name="ResultArea" disabled rows="1" cols="50">{{.Output}}</textarea>
+		</div>
 
-		<form name="Decode" action="/base64Decode" method="get">
-			Base 64 Decode: <input type="text" name="data">
-			<input type="submit" value="Decode">
-		</form>
-		<textarea name="decodeResult" disabled rows="1" cols="50">{{.DecodeResult}}</textarea>
-		
-		<form name="Json" action="/validateJson" method="get">
-			Validate Json: <input type="text" name="data">
-			<input type="submit" value="Validate">
-		</form>
-		<textarea name="jsonResult" disabled rows="1" cols="50">{{.JsonResult}}</textarea>
-		
-		<form name="Md5" action="/md5Hash" method="get">
-			MD5 Hash: <input type="text" name="data">
-			<input type="submit" value="Hash">
-		</form>
-		<textarea name="md5Result" disabled rows="1" cols="50">{{.Md5Result}}</textarea>
-		
-		<form name="Sha1Hash" action="/sha1Hash" method="get">
-			SHA-1 Hash: <input type="text" name="data">
-			<input type="submit" value="Hash">
-		</form>
-		<textarea name="sha1Result" disabled rows="1" cols="50">{{.Sha1Result}}</textarea>
-		
-		<form name="TimeToEpoch" action="/convertTimeToEpoch" method="get">
-			Convert Time to Epoch: <input type="text" name="data">
-			<input type="submit" value="Convert">
-		</form>
-		<textarea name="epochTimeResult" disabled rows="1" cols="50">{{.EpochTimeResult}}</textarea>
-		
-		<form name="TimeFromEpoch" action="/convertTimeFromEpoch" method="get">
-			Convert Time from Epoch: <input type="text" name="data">
-			<input type="submit" value="Convert">
-		</form>
-		<textarea name="readableTimeResult" disabled rows="1" cols="50">{{.ReadableTimeResult}}</textarea>
+		<div id="DecodeDiv">
+			<form name="Decode" action="/base64Decode" method="get">
+				Base 64 Decode: <input type="text" name="data">
+				<input type="submit" value="Decode">
+			</form>
+			<textarea name="ResultArea" disabled rows="1" cols="50">{{.Output}}</textarea>
+		</div>
+
+		<div id="JsonDiv">
+			<form name="Json" action="/validateJson" method="get">
+				Validate Json: <input type="text" name="data">
+				<input type="submit" value="Validate">
+			</form>
+			<textarea name="ResultArea" disabled rows="1" cols="50">{{.Output}}</textarea>
+		</div>
+
+		<div id="Md5HashDiv">
+			<form name="Md5Hash" action="/md5Hash" method="get">
+				MD5 Hash: <input type="text" name="data">
+				<input type="submit" value="Hash">
+			</form>
+			<textarea name="ResultArea" disabled rows="1" cols="50">{{.Output}}</textarea>
+		</div>
+
+		<div id="Sha1HashDiv">
+			<form name="Sha1Hash" action="/sha1Hash" method="get">
+				SHA-1 Hash: <input type="text" name="data">
+				<input type="submit" value="Hash">
+			</form>
+			<textarea name="ResultArea" disabled rows="1" cols="50">{{.Output}}</textarea>
+		</div>
+
+		<div id="TimeToEpochDiv">
+			<form name="TimeToEpoch" action="/convertTimeToEpoch" method="get">
+				Convert Time to Epoch: <input type="text" name="data">
+				<input type="submit" value="Convert">
+			</form>
+			<textarea name="ResultArea" disabled rows="1" cols="50">{{.Output}}</textarea>
+		</div>
+
+		<div id="TimeFromEpochDiv">
+			<form name="TimeFromEpoch" action="/convertTimeFromEpoch" method="get">
+				Convert Time from Epoch: <input type="text" name="data">
+				<input type="submit" value="Convert">
+			</form>
+			<textarea name="ResultArea" disabled rows="1" cols="50">{{.Output}}</textarea>
+		</div>
 
 		<script type="text/javascript">
-			if ({{.EncodeValid}}) {
-				document.getElementsByName("encodeResult")[0].style.visibility="visible";
-			} else {
-				document.getElementsByName("encodeResult")[0].style.visibility="hidden";
+			
+			hideAllResultAreas();
+			if ({{.Valid}}) {
+				console.log("valid response for " + {{.Field}})
+
+				var div = document.getElementById("{{.Field}}");
+				var textAreas = div.getElementsByTagName('textarea');
+				textAreas[0].style.visibility="visible";
+				var inputs = div.getElementsByTagName('input');
+				inputs[0].value="{{.Input}}";
 			}
-			if ({{.DecodeValid}}) {
-				document.getElementsByName("decodeResult")[0].style.visibility="visible";
-			} else {
-				document.getElementsByName("decodeResult")[0].style.visibility="hidden";
+
+			function startClock() {
+				// TODO implement
 			}
-			if ({{.JsonValid}}) {
-				document.getElementsByName("jsonResult")[0].style.visibility="visible";
-			} else {
-				document.getElementsByName("jsonResult")[0].style.visibility="hidden";
-			}
-			if ({{.Md5Valid}}) {
-				document.getElementsByName("md5Result")[0].style.visibility="visible";
-			} else {
-				document.getElementsByName("md5Result")[0].style.visibility="hidden";
-			}
-			if ({{.Sha1Valid}}) {
-				document.getElementsByName("sha1Result")[0].style.visibility="visible";
-			} else {
-				document.getElementsByName("sha1Result")[0].style.visibility="hidden";
-			}
-			if ({{.EpochTimeValid}}) {
-				document.getElementsByName("epochTimeResult")[0].style.visibility="visible";
-			} else {
-				document.getElementsByName("epochTimeResult")[0].style.visibility="hidden";
-			}
-			if ({{.ReadableTimeValid}}) {
-				document.getElementsByName("readableTimeResult")[0].style.visibility="visible";
-			} else {
-				document.getElementsByName("readableTimeResult")[0].style.visibility="hidden";
+
+			function hideAllResultAreas() {
+				console.log("hiding all...")
+				var textAreas = document.getElementsByTagName('textarea');
+				for (var i = 0, j = textAreas.length; i < j; i++) {
+					textAreas[i].style.visibility="hidden";
+				}
 			}
 		</script>
 	</body> 

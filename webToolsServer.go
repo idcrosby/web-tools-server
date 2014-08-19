@@ -51,25 +51,29 @@ func defaultHandler(rw http.ResponseWriter, req *http.Request) {
 	InfoLog.Println("defaultHandler called")
 	var webToolsTemplate, err = template.ParseFiles("webToolsForm.html")
 	check(err)
-	var data = Data{}
-	webToolsTemplate.Execute(rw, data)
+	// var data = Data{}
+	var responseData = ResponseData{Field: "none"}
+	webToolsTemplate.Execute(rw, responseData)
 }
 
 // TODO Merge these handlers
 func base64EncodeHandler(rw http.ResponseWriter, req *http.Request) {
 	InfoLog.Println("base64EncodeHandler called")
 	encode := retrieveParam(req, "data")
-	var data = Data{}
+	// var data = Data{}
+	var responseData = ResponseData{}	
 	if (len(encode) == 0) {
 		ErrorLog.Println("No data found.")
-		data = Data{EncodeResult: "", EncodeValid: false}
+		// data = Data{EncodeResult: "", EncodeValid: false}
+		responseData = ResponseData{}
 	} else {
 		encoded := myTools.Base64Encode([]byte(encode))
-		data = Data{EncodeResult: encoded, EncodeValid: true}
+		// data = Data{EncodeResult: encoded, EncodeValid: true}
+		responseData = ResponseData{Input: encode, Output: encoded, Field: "EncodeDiv", Valid: true}
 	}
 	var resultTemplate, err = template.ParseFiles("webToolsForm.html")
 	check(err)
-	resultTemplate.Execute(rw, data) 
+	resultTemplate.Execute(rw, responseData) 
 }
 
 func base64DecodeHandler(rw http.ResponseWriter, req *http.Request) {
@@ -81,10 +85,11 @@ func base64DecodeHandler(rw http.ResponseWriter, req *http.Request) {
 		return
 	}
 	decoded := myTools.Base64Decode(decode)
-	var data = Data{DecodeResult: string(decoded), DecodeValid: true}
+	// var data = Data{DecodeResult: string(decoded), DecodeValid: true}
+	var responseData = ResponseData{Input: decode, Output: string(decoded), Field: "DecodeDiv", Valid: true}
 	var resultTemplate, err = template.ParseFiles("webToolsForm.html")
 	check(err)
-	resultTemplate.Execute(rw, data)
+	resultTemplate.Execute(rw, responseData)
 }
 
 func validateJsonHandler(rw http.ResponseWriter, req *http.Request) {
@@ -96,10 +101,11 @@ func validateJsonHandler(rw http.ResponseWriter, req *http.Request) {
 		return
 	}
 	json := myTools.ValidateJson([]byte(input))
-	var data = Data{JsonResult: string(json), JsonValid: true}
+	// var data = Data{JsonResult: string(json), JsonValid: true}
+	var responseData = ResponseData{Input: input, Output: string(json), Field: "JsonDiv", Valid: true}
 	var resultTemplate, err = template.ParseFiles("webToolsForm.html")
 	check(err)
-	resultTemplate.Execute(rw, data)
+	resultTemplate.Execute(rw, responseData)
 
 }
 
@@ -112,10 +118,11 @@ func md5HashHandler(rw http.ResponseWriter, req *http.Request) {
 		return
 	}
 	hash := myTools.Md5Hash([]byte(input))
-	var data = Data{Md5Result: hash, Md5Valid: true}
+	// var data = Data{Md5Result: hash, Md5Valid: true}
+	var responseData = ResponseData{Input: input, Output: hash, Field: "Md5HashDiv", Valid: true}
 	var resultTemplate, err = template.ParseFiles("webToolsForm.html")
 	check(err)
-	resultTemplate.Execute(rw, data)
+	resultTemplate.Execute(rw, responseData)
 }
 
 func sha1HashHandler(rw http.ResponseWriter, req *http.Request) {
@@ -127,10 +134,11 @@ func sha1HashHandler(rw http.ResponseWriter, req *http.Request) {
 		return
 	}
 	hash := myTools.Sha1Hash([]byte(input))
-	var data = Data{Sha1Result: hash, Sha1Valid: true}
+	// var data = Data{Sha1Result: hash, Sha1Valid: true}
+	var responseData = ResponseData{Input: input, Output: hash, Field: "Sha1HashDiv", Valid: true}
 	var resultTemplate, err = template.ParseFiles("webToolsForm.html")
 	check(err)
-	resultTemplate.Execute(rw, data)
+	resultTemplate.Execute(rw, responseData)
 }
 
 func convertTimeToEpochHandler(rw http.ResponseWriter, req *http.Request) {
@@ -143,10 +151,11 @@ func convertTimeToEpochHandler(rw http.ResponseWriter, req *http.Request) {
 	}
 	myTime, _ := time.Parse("2006-01-02 15:04:05 -0700 MST", string(input))
 	epochTime := myTools.ConvertTimeToEpoch(myTime)
-	var data = Data{EpochTimeResult: strconv.FormatInt(epochTime, 10), EpochTimeValid: true}
+	// var data = Data{EpochTimeResult: strconv.FormatInt(epochTime, 10), EpochTimeValid: true}
+	var responseData = ResponseData{Input: input, Output: strconv.FormatInt(epochTime, 10), Field: "TimeToEpochDiv", Valid: true}
 	var resultTemplate, err = template.ParseFiles("webToolsForm.html")
 	check(err)
-	resultTemplate.Execute(rw, data)
+	resultTemplate.Execute(rw, responseData)
 }
 
 func convertTimeFromEpochHandler(rw http.ResponseWriter, req *http.Request) {
@@ -159,10 +168,11 @@ func convertTimeFromEpochHandler(rw http.ResponseWriter, req *http.Request) {
 	}
 	epochTime, _ := strconv.ParseInt(input, 10, 64	)
 	time := myTools.ConvertTimeFromEpoch(epochTime)
-	var data = Data{ReadableTimeResult: time.String(), ReadableTimeValid: true}
+	// var data = Data{ReadableTimeResult: time.String(), ReadableTimeValid: true}
+	var responseData = ResponseData{Input: input, Output: time.String(), Field: "TimeFromEpochDiv", Valid: true}
 	var resultTemplate, err = template.ParseFiles("webToolsForm.html")
 	check(err)
-	resultTemplate.Execute(rw, data)
+	resultTemplate.Execute(rw, responseData)
 }
 
 // Error Handler Wrapper
@@ -211,7 +221,12 @@ func requestAsString(request *http.Request) []byte {
 	return buffer.Bytes()
 }
 
-type Data struct {
-	EncodeValid, DecodeValid, JsonValid, Md5Valid, Sha1Valid, EpochTimeValid, ReadableTimeValid bool
-	EncodeResult, DecodeResult, JsonResult, Md5Result, Sha1Result, EpochTimeResult, ReadableTimeResult string
+// type Data struct {
+// 	EncodeValid, DecodeValid, JsonValid, Md5Valid, Sha1Valid, EpochTimeValid, ReadableTimeValid bool
+// 	EncodeResult, DecodeResult, JsonResult, Md5Result, Sha1Result, EpochTimeResult, ReadableTimeResult string
+// }
+
+type ResponseData struct {
+	Input, Output, Field string
+	Valid bool
 }
