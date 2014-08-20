@@ -60,12 +60,10 @@ func defaultHandler(rw http.ResponseWriter, req *http.Request) {
 func base64EncodeHandler(rw http.ResponseWriter, req *http.Request) {
 	InfoLog.Println("base64EncodeHandler called")
 	encode := retrieveParam(req, "data")
-	// var data = Data{}
+
 	var responseData = ResponseData{}	
 	if (len(encode) == 0) {
 		ErrorLog.Println("No data found.")
-		// data = Data{EncodeResult: "", EncodeValid: false}
-		responseData = ResponseData{}
 	} else {
 		encoded := myTools.Base64Encode([]byte(encode))
 		// data = Data{EncodeResult: encoded, EncodeValid: true}
@@ -79,14 +77,13 @@ func base64EncodeHandler(rw http.ResponseWriter, req *http.Request) {
 func base64DecodeHandler(rw http.ResponseWriter, req *http.Request) {
 	InfoLog.Println("base64DecodeHandler called")
 	decode := retrieveParam(req, "data")
+	var responseData = ResponseData{}
 	if (len(decode) == 0) {
 		ErrorLog.Println("No data found.")
-		rw.WriteHeader(400)
-		return
+	} else {
+		decoded := myTools.Base64Decode(decode)
+		responseData = ResponseData{Input: decode, Output: string(decoded), Field: "DecodeDiv", Valid: true}
 	}
-	decoded := myTools.Base64Decode(decode)
-	// var data = Data{DecodeResult: string(decoded), DecodeValid: true}
-	var responseData = ResponseData{Input: decode, Output: string(decoded), Field: "DecodeDiv", Valid: true}
 	var resultTemplate, err = template.ParseFiles("webToolsForm.html")
 	check(err)
 	resultTemplate.Execute(rw, responseData)
@@ -95,14 +92,13 @@ func base64DecodeHandler(rw http.ResponseWriter, req *http.Request) {
 func validateJsonHandler(rw http.ResponseWriter, req *http.Request) {
 	InfoLog.Println("validateJsonHandler called")
 	input := retrieveParam(req, "data")
+	var responseData = ResponseData{}
 	if (len(input) == 0) {
 		ErrorLog.Println("No data found.")
-		rw.WriteHeader(400)
-		return
+	} else {
+		json := myTools.ValidateJson([]byte(input))
+		responseData = ResponseData{Input: input, Output: string(json), Field: "JsonDiv", Valid: true}
 	}
-	json := myTools.ValidateJson([]byte(input))
-	// var data = Data{JsonResult: string(json), JsonValid: true}
-	var responseData = ResponseData{Input: input, Output: string(json), Field: "JsonDiv", Valid: true}
 	var resultTemplate, err = template.ParseFiles("webToolsForm.html")
 	check(err)
 	resultTemplate.Execute(rw, responseData)
@@ -112,14 +108,13 @@ func validateJsonHandler(rw http.ResponseWriter, req *http.Request) {
 func md5HashHandler(rw http.ResponseWriter, req *http.Request) {
 	InfoLog.Println("md5HashHandler called")
 	input := retrieveParam(req, "data")
+	var responseData = ResponseData{}
 	if (len(input) == 0) {
 		ErrorLog.Println("No data found.")
-		rw.WriteHeader(400)
-		return
+	} else{
+		hash := myTools.Md5Hash([]byte(input))
+		responseData = ResponseData{Input: input, Output: hash, Field: "Md5HashDiv", Valid: true}
 	}
-	hash := myTools.Md5Hash([]byte(input))
-	// var data = Data{Md5Result: hash, Md5Valid: true}
-	var responseData = ResponseData{Input: input, Output: hash, Field: "Md5HashDiv", Valid: true}
 	var resultTemplate, err = template.ParseFiles("webToolsForm.html")
 	check(err)
 	resultTemplate.Execute(rw, responseData)
@@ -128,14 +123,13 @@ func md5HashHandler(rw http.ResponseWriter, req *http.Request) {
 func sha1HashHandler(rw http.ResponseWriter, req *http.Request) {
 	InfoLog.Println("sha1HashHandler called")
 	input := retrieveParam(req, "data")
+	var responseData = ResponseData{}
 	if (len(input) == 0) {
 		ErrorLog.Println("No data found.")
-		rw.WriteHeader(400)
-		return
+	} else {
+		hash := myTools.Sha1Hash([]byte(input))
+		responseData = ResponseData{Input: input, Output: hash, Field: "Sha1HashDiv", Valid: true}
 	}
-	hash := myTools.Sha1Hash([]byte(input))
-	// var data = Data{Sha1Result: hash, Sha1Valid: true}
-	var responseData = ResponseData{Input: input, Output: hash, Field: "Sha1HashDiv", Valid: true}
 	var resultTemplate, err = template.ParseFiles("webToolsForm.html")
 	check(err)
 	resultTemplate.Execute(rw, responseData)
@@ -144,15 +138,14 @@ func sha1HashHandler(rw http.ResponseWriter, req *http.Request) {
 func convertTimeToEpochHandler(rw http.ResponseWriter, req *http.Request) {
 	InfoLog.Println("convertTimeToEpochHandler called")
 	input := retrieveParam(req, "data")
+	var responseData = ResponseData{}
 	if (len(input) == 0) {
 		ErrorLog.Println("No data found.")
-		rw.WriteHeader(400)
-		return
+	} else {
+		myTime, _ := time.Parse("2006-01-02 15:04:05 -0700 MST", string(input))
+		epochTime := myTools.ConvertTimeToEpoch(myTime)
+		responseData = ResponseData{Input: input, Output: strconv.FormatInt(epochTime, 10), Field: "TimeToEpochDiv", Valid: true}
 	}
-	myTime, _ := time.Parse("2006-01-02 15:04:05 -0700 MST", string(input))
-	epochTime := myTools.ConvertTimeToEpoch(myTime)
-	// var data = Data{EpochTimeResult: strconv.FormatInt(epochTime, 10), EpochTimeValid: true}
-	var responseData = ResponseData{Input: input, Output: strconv.FormatInt(epochTime, 10), Field: "TimeToEpochDiv", Valid: true}
 	var resultTemplate, err = template.ParseFiles("webToolsForm.html")
 	check(err)
 	resultTemplate.Execute(rw, responseData)
@@ -161,15 +154,14 @@ func convertTimeToEpochHandler(rw http.ResponseWriter, req *http.Request) {
 func convertTimeFromEpochHandler(rw http.ResponseWriter, req *http.Request) {
 	InfoLog.Println("convertTimeFromEpochHandler called")
 	input := retrieveParam(req, "data")
+	var responseData = ResponseData{}
 	if (len(input) == 0) {
 		ErrorLog.Println("No data found.")
-		rw.WriteHeader(400)
-		return
+	} else {
+		epochTime, _ := strconv.ParseInt(input, 10, 64	)
+		time := myTools.ConvertTimeFromEpoch(epochTime)
+		responseData = ResponseData{Input: input, Output: time.String(), Field: "TimeFromEpochDiv", Valid: true}
 	}
-	epochTime, _ := strconv.ParseInt(input, 10, 64	)
-	time := myTools.ConvertTimeFromEpoch(epochTime)
-	// var data = Data{ReadableTimeResult: time.String(), ReadableTimeValid: true}
-	var responseData = ResponseData{Input: input, Output: time.String(), Field: "TimeFromEpochDiv", Valid: true}
 	var resultTemplate, err = template.ParseFiles("webToolsForm.html")
 	check(err)
 	resultTemplate.Execute(rw, responseData)

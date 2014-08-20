@@ -1,8 +1,33 @@
 <html>
 	<head> 
-		<meta http-equiv='Content-Type' content='text/html; charset=UTF-8' /> 
+		<meta http-equiv='Content-Type' content='text/html; charset=UTF-8' />
+		<title>My Tools</title>
 	</head>
-	<body onload="startClock()">
+	<h1>Basic Web Tools</h1>
+	<body onload="init()">
+
+		<div id="Clock">
+			Current Unix Epoch Time:
+			<textarea id="EpochClock" disabled rows="1"></textarea>
+			<button type="button" onclick="copyDate()">Copy</button>
+		</div><p>
+
+		<div id="TimeFromEpochDiv">
+			<form name="TimeFromEpoch" action="/convertTimeFromEpoch" method="get">
+				Convert Time from Epoch: <input id="epochTimeInput" type="text" name="data">
+				<input type="submit" value="Convert">
+			</form>
+			<textarea name="ResultArea" disabled rows="1" cols="50">{{.Output}}</textarea>
+		</div>
+
+		<div id="TimeToEpochDiv">
+			<form name="TimeToEpoch" action="/convertTimeToEpoch" method="get">
+				Convert Time to Epoch: <input type="text" name="data">
+				<input type="submit" value="Convert">
+			</form>
+			<textarea name="ResultArea" disabled rows="1" cols="50">{{.Output}}</textarea>
+		</div>
+
 		<div id="EncodeDiv">
 			<form name="Encode" action="/base64Encode" method="get">
 				Base 64 Encode: <input type="text" name="data">
@@ -43,44 +68,25 @@
 			<textarea name="ResultArea" disabled rows="1" cols="50">{{.Output}}</textarea>
 		</div>
 
-		<div id="TimeToEpochDiv">
-			<form name="TimeToEpoch" action="/convertTimeToEpoch" method="get">
-				Convert Time to Epoch: <input type="text" name="data">
-				<input type="submit" value="Convert">
-			</form>
-			<textarea name="ResultArea" disabled rows="1" cols="50">{{.Output}}</textarea>
-		</div>
-
-		<div id="Clock">
-			Current Unix Epoch Time:
-			<textarea id="EpochClock" disabled rows="1"></textarea>
-			<button type="button" onclick="copyDate()">Copy</button>
-		</div><p>
-
-		<div id="TimeFromEpochDiv">
-			<form name="TimeFromEpoch" action="/convertTimeFromEpoch" method="get">
-				Convert Time from Epoch: <input id="epochTimeInput" type="text" name="data">
-				<input type="submit" value="Convert">
-			</form>
-			<textarea name="ResultArea" disabled rows="1" cols="50">{{.Output}}</textarea>
-		</div>
-
 		<script type="text/javascript">
 			
-			hideAllResultAreas();
-			if ({{.Valid}}) {
-				console.log("valid response for " + {{.Field}})
+			function init() {
+				hideAllResultAreas();
+				startClock();
 
-				var div = document.getElementById("{{.Field}}");
-				var textAreas = div.getElementsByTagName('textarea');
-				textAreas[0].style.visibility="visible";
-				var inputs = div.getElementsByTagName('input');
-				inputs[0].value="{{.Input}}";
+				if ({{.Valid}}) {
+					console.log("valid response for {{.Field}}")
+
+					var div = document.getElementById("{{.Field}}");
+					var textAreas = div.getElementsByTagName('textarea');
+					textAreas[0].style.visibility="visible";
+					var inputs = div.getElementsByTagName('input');
+					inputs[0].value="{{.Input}}";
+				}
 			}
 
 			function startClock() {
 			    var epoch= Math.round(new Date().getTime()/1000);
-			    // document.getElementById('Clock').innerHTML = "Current Unix Epoch Time: " + epoch;
 			    document.getElementById('EpochClock').value = epoch;
 			    var t = setTimeout(function(){startClock()},500);
 			}
