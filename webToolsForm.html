@@ -2,7 +2,7 @@
 	<head> 
 		<meta http-equiv='Content-Type' content='text/html; charset=UTF-8' /> 
 	</head>
-	<body>
+	<body onload="startClock()">
 		<div id="EncodeDiv">
 			<form name="Encode" action="/base64Encode" method="get">
 				Base 64 Encode: <input type="text" name="data">
@@ -51,9 +51,15 @@
 			<textarea name="ResultArea" disabled rows="1" cols="50">{{.Output}}</textarea>
 		</div>
 
+		<div id="Clock">
+			Current Unix Epoch Time:
+			<textarea id="EpochClock" disabled rows="1"></textarea>
+			<button type="button" onclick="copyDate()">Copy</button>
+		</div><p>
+
 		<div id="TimeFromEpochDiv">
 			<form name="TimeFromEpoch" action="/convertTimeFromEpoch" method="get">
-				Convert Time from Epoch: <input type="text" name="data">
+				Convert Time from Epoch: <input id="epochTimeInput" type="text" name="data">
 				<input type="submit" value="Convert">
 			</form>
 			<textarea name="ResultArea" disabled rows="1" cols="50">{{.Output}}</textarea>
@@ -73,15 +79,24 @@
 			}
 
 			function startClock() {
-				// TODO implement
+			    var epoch= Math.round(new Date().getTime()/1000);
+			    // document.getElementById('Clock').innerHTML = "Current Unix Epoch Time: " + epoch;
+			    document.getElementById('EpochClock').value = epoch;
+			    var t = setTimeout(function(){startClock()},500);
 			}
 
 			function hideAllResultAreas() {
 				console.log("hiding all...")
 				var textAreas = document.getElementsByTagName('textarea');
 				for (var i = 0, j = textAreas.length; i < j; i++) {
-					textAreas[i].style.visibility="hidden";
+					if (textAreas[i].name.indexOf("Result") > -1)
+						textAreas[i].style.visibility="hidden";
 				}
+			}
+
+			function copyDate() {
+				var epoch = Math.round(new Date().getTime()/1000);
+				document.getElementById("epochTimeInput").value=epoch;
 			}
 		</script>
 	</body> 
