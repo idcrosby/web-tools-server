@@ -11,13 +11,17 @@ import (
 	"net/url"
 	"os"
 	"strconv"
-	"text/template"
+	"html/template"
 	"time"
 )
 
 var InfoLog *log.Logger
 var ErrorLog *log.Logger
 var Verbose bool
+
+// Constants
+
+var htmlPage = "webToolsWithBootstrap.html"
 
 func main() {
 	fmt.Println("running server...")
@@ -39,6 +43,9 @@ func main() {
 	http.HandleFunc("/convertTimeToEpoch", errorHandler(convertTimeToEpochHandler))
 	http.HandleFunc("/convertTimeFromEpoch", errorHandler(convertTimeFromEpochHandler))
 
+	// Serve CSS/JS files
+	http.Handle("/resources/", http.StripPrefix("/resources/", http.FileServer(http.Dir("resources"))))
+
 	port := os.Getenv("PORT")
 	if port == "" {
 		port = "8087"
@@ -49,7 +56,7 @@ func main() {
 
 func defaultHandler(rw http.ResponseWriter, req *http.Request) {
 	InfoLog.Println("defaultHandler called")
-	var webToolsTemplate, err = template.ParseFiles("webToolsForm.html")
+	var webToolsTemplate, err = template.ParseFiles(htmlPage)
 	check(err)
 	// var data = Data{}
 	var responseData = ResponseData{Field: "none"}
@@ -69,7 +76,7 @@ func base64EncodeHandler(rw http.ResponseWriter, req *http.Request) {
 		// data = Data{EncodeResult: encoded, EncodeValid: true}
 		responseData = ResponseData{Input: encode, Output: encoded, Field: "EncodeDiv", Valid: true}
 	}
-	var resultTemplate, err = template.ParseFiles("webToolsForm.html")
+	var resultTemplate, err = template.ParseFiles(htmlPage)
 	check(err)
 	resultTemplate.Execute(rw, responseData) 
 }
@@ -84,7 +91,7 @@ func base64DecodeHandler(rw http.ResponseWriter, req *http.Request) {
 		decoded := myTools.Base64Decode(decode)
 		responseData = ResponseData{Input: decode, Output: string(decoded), Field: "DecodeDiv", Valid: true}
 	}
-	var resultTemplate, err = template.ParseFiles("webToolsForm.html")
+	var resultTemplate, err = template.ParseFiles(htmlPage)
 	check(err)
 	resultTemplate.Execute(rw, responseData)
 }
@@ -99,7 +106,7 @@ func validateJsonHandler(rw http.ResponseWriter, req *http.Request) {
 		json := myTools.ValidateJson([]byte(input))
 		responseData = ResponseData{Input: input, Output: string(json), Field: "JsonDiv", Valid: true}
 	}
-	var resultTemplate, err = template.ParseFiles("webToolsForm.html")
+	var resultTemplate, err = template.ParseFiles(htmlPage)
 	check(err)
 	resultTemplate.Execute(rw, responseData)
 
@@ -115,7 +122,7 @@ func md5HashHandler(rw http.ResponseWriter, req *http.Request) {
 		hash := myTools.Md5Hash([]byte(input))
 		responseData = ResponseData{Input: input, Output: hash, Field: "Md5HashDiv", Valid: true}
 	}
-	var resultTemplate, err = template.ParseFiles("webToolsForm.html")
+	var resultTemplate, err = template.ParseFiles(htmlPage)
 	check(err)
 	resultTemplate.Execute(rw, responseData)
 }
@@ -130,7 +137,7 @@ func sha1HashHandler(rw http.ResponseWriter, req *http.Request) {
 		hash := myTools.Sha1Hash([]byte(input))
 		responseData = ResponseData{Input: input, Output: hash, Field: "Sha1HashDiv", Valid: true}
 	}
-	var resultTemplate, err = template.ParseFiles("webToolsForm.html")
+	var resultTemplate, err = template.ParseFiles(htmlPage)
 	check(err)
 	resultTemplate.Execute(rw, responseData)
 }
@@ -146,7 +153,7 @@ func convertTimeToEpochHandler(rw http.ResponseWriter, req *http.Request) {
 		epochTime := myTools.ConvertTimeToEpoch(myTime)
 		responseData = ResponseData{Input: input, Output: strconv.FormatInt(epochTime, 10), Field: "TimeToEpochDiv", Valid: true}
 	}
-	var resultTemplate, err = template.ParseFiles("webToolsForm.html")
+	var resultTemplate, err = template.ParseFiles(htmlPage)
 	check(err)
 	resultTemplate.Execute(rw, responseData)
 }
@@ -162,7 +169,7 @@ func convertTimeFromEpochHandler(rw http.ResponseWriter, req *http.Request) {
 		time := myTools.ConvertTimeFromEpoch(epochTime)
 		responseData = ResponseData{Input: input, Output: time.String(), Field: "TimeFromEpochDiv", Valid: true}
 	}
-	var resultTemplate, err = template.ParseFiles("webToolsForm.html")
+	var resultTemplate, err = template.ParseFiles(htmlPage)
 	check(err)
 	resultTemplate.Execute(rw, responseData)
 }
