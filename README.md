@@ -6,4 +6,6 @@ Written in Go.
 
 TODO:
 - Add Validation and Error Handling
-- Make pretty UI (Bootstrap?)
+- Add Navbar functionality
+- Handle multiple date types
+- Expand JSON Validator
