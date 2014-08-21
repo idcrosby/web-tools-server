@@ -9,3 +9,4 @@ TODO:
 - Add Navbar functionality
 - Handle multiple date types
 - Expand JSON Validator
+- Add description/details

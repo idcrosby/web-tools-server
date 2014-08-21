@@ -1,0 +1,168 @@
+<html>
+	<head> 
+	    <meta charset="utf-8">
+	    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+	    <meta name="viewport" content="width=device-width, initial-scale=1">
+	    <meta name="description" content="basic web app for my web tools">
+	    <meta name="author" content="idcrosby">
+	    <link rel="icon" href="/resources/favicon.ico">
+
+		<title>My Tools</title>
+
+	    <!-- Bootstrap core CSS -->
+    	<link href="/resources/css/bootstrap.min.css" rel="stylesheet">
+
+    	<!-- Bootstrap theme -->
+    	<link href="/resources/css/bootstrap-theme.min.css" rel="stylesheet">
+
+	    <!-- Custom styles for this template 
+    	<link href="navbar.css" rel="stylesheet"> -->
+	</head>
+
+	<body onload="init()">
+
+	    <div class="container">
+			<div class="navbar navbar-default" role="navigation">
+			  <div class="container-fluid">
+			    <!-- Brand and toggle get grouped for better mobile display -->
+			    <div class="navbar-header">
+			      <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
+			        <span class="sr-only">Toggle navigation</span>
+			        <span class="icon-bar">One</span>
+			        <span class="icon-bar">Two</span>
+			        <span class="icon-bar">Three</span>
+			      </button>
+			      <a class="navbar-brand" href="#">Basic Web Tools</a>
+			    </div>
+
+			    <!-- Collect the nav links, forms, and other content for toggling -->
+			    <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+			      <ul class="nav navbar-nav">
+			        <li class="active"><a href="/convertTimeToEpoch">Time</a></li>
+			        <li><a href="/validateJson">JSON</a></li>
+			        <li><a href="/base64Encode">Base 64</a></li>
+			        <li class="dropdown">
+			          <a href="#" class="dropdown-toggle" data-toggle="dropdown">Hashing <span class="caret"></span></a>
+			          <ul class="dropdown-menu" role="menu">
+			            <li><a href="/md5Hash">MD5 </a></li>
+			            <li><a href="/sha1Hash">SHA-1</a></li>
+			            <li class="divider"></li>
+			            <li><a href="#">Separated link</a></li>
+			          </ul>
+			        </li>
+			      </ul>
+			      <form class="navbar-form navbar-left" role="search">
+			        <div class="form-group">
+			          <input type="text" class="form-control" placeholder="Search">
+			        </div>
+			        <button type="submit" class="btn btn-default">Submit</button>
+			      </form>
+			      <ul class="nav navbar-nav navbar-right">
+			        <li><a href="#">Link</a></li>
+			        <li class="dropdown">
+			          <a href="#" class="dropdown-toggle" data-toggle="dropdown">Dropdown <span class="caret"></span></a>
+			          <ul class="dropdown-menu" role="menu">
+			            <li><a href="#">Action</a></li>
+			            <li><a href="#">Another action</a></li>
+			            <li><a href="#">Something else here</a></li>
+			            <li class="divider"></li>
+			            <li><a href="#">Separated link</a></li>
+			          </ul>
+			        </li>
+			      </ul>
+			    </div><!-- /.navbar-collapse -->
+			  </div><!-- /.container-fluid -->
+			</div>
+
+
+		 	<div class="jumbotron">
+				<div class="panel panel-primary" id="Clock">
+					<div class="panel-body">
+						<form class="form-inline" role="form">
+							<div class="form-group">
+								<label for="unixClock">Current Unix Epoch Time</label>
+								<input type="text" disabled class="form-control" id="unixClock">
+							</div>
+							<button type="button" class="btn btn-default" onclick="copyDate()">Copy</button>
+						</form>
+					</div>
+				</div>
+
+				<div class="panel panel-primary" id="TimeFromEpochDiv">
+					<div class="panel-heading">
+						<h3 class="panel-title">Epoch Time to Readable Time</h3>
+					</div>
+					<div class="panel-body">
+						<form class="form-inline" role="form" action="/convertTimeFromEpoch">
+							<div class="form-group">
+								<label for="epochTimeInput">Unix Epoch Time</label>
+								<input type="text" class="form-control" id="epochTimeInput" placeholder="time in seconds" name="data">
+							</div>
+							<button type="submit" class="btn btn-default">Convert</button>
+						</form>
+						<textarea class="form-control" name="ResultArea" disabled rows="1" cols="50">{{.Output}}</textarea>
+					</div>
+				</div>
+
+				<div class="panel panel-primary" id="TimeToEpochDiv">
+					<div class="panel-heading">
+						<h3 class="panel-title">Readable Time to Epoch Time</h3>
+					</div>
+					<div class="panel-body" method="get">
+						<form class="form-inline" role="form" action="/convertTimeToEpoch">
+							<div class="form-group">
+								<label for="readableTimeInput">Readable Time</label>
+								<input type="text" class="form-control" id="readableTimeInput" placeholder="YYYY-MM-DD HH:MM:SS +zzzz CEST" name="data">
+							</div>
+							<button type="submit" class="btn btn-default">Convert</button>
+						</form>
+						<textarea class="form-control" name="ResultArea" disabled rows="1" cols="50">{{.Output}}</textarea>
+					</div>
+				</div>
+
+			</div> <!-- /jumbotron -->
+		</div> <!-- /container -->
+		<script type="text/javascript">
+			
+			function init() {
+				hideAllResultAreas();
+				startClock();
+
+				if ({{.Valid}}) {
+					console.log("valid response for {{.Field}}")
+
+					var div = document.getElementById("{{.Field}}");
+					var textAreas = div.getElementsByTagName('textarea');
+					textAreas[0].style.visibility="visible";
+					var inputs = div.getElementsByTagName('input');
+					inputs[0].value="{{.Input}}";
+				}
+			}
+
+			function startClock() {
+			    var epoch= Math.round(new Date().getTime()/1000);
+			    document.getElementById('unixClock').value = epoch;
+			    var t = setTimeout(function(){startClock()},500);
+			}
+
+			function hideAllResultAreas() {
+				console.log("hiding all...")
+				var textAreas = document.getElementsByTagName('textarea');
+				for (var i = 0, j = textAreas.length; i < j; i++) {
+					if (textAreas[i].name.indexOf("Result") > -1)
+						textAreas[i].style.visibility="hidden";
+				}
+			}
+
+			function copyDate() {
+				var epoch = Math.round(new Date().getTime()/1000);
+				document.getElementById("epochTimeInput").value=epoch;
+			}
+		</script>
+		<!-- Bootstrap core JavaScript
+    	================================================== -->
+	    <!-- Placed at the end of the document so the pages load faster -->
+	    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+	    <script src="/resources/js/bootstrap.min.js"></script>
+	</body> 
+</html>
