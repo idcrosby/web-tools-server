@@ -109,12 +109,18 @@
 						<h3 class="panel-title">Readable Time to Epoch Time</h3>
 					</div>
 					<div class="panel-body" method="get">
-						<form class="form-inline" role="form" action="/convertTimeToEpoch">
-							<div class="form-group">
-								<label for="readableTimeInput">Readable Time</label>
-								<input type="text" class="form-control" id="readableTimeInput" placeholder="YYYY-MM-DD HH:MM:SS +zzzz CEST" name="data">
+						<form class="form" role="form" action="/convertTimeToEpoch">
+							<div class="row form-group">
+								<div class="col-xs-2">
+									<label for="readableTimeInput">Readable Time</label>
+								</div>
+								<div class="col-xs-4">
+									<input type="text" class="form-control" id="readableTimeInput" placeholder="YYYY-MM-DD HH:MM:SS +zzzz CEST" name="data">
+								</div>
+								<div class="col-xs-1">
+									<button type="submit" class="btn btn-default">Convert</button>
+								</div>
 							</div>
-							<button type="submit" class="btn btn-default">Convert</button>
 						</form>
 						<textarea class="form-control" name="ResultArea" disabled rows="1" cols="50">{{.Output}}</textarea>
 					</div>
@@ -125,37 +131,32 @@
 						<h3 class="panel-title">Build Time to Epoch Time</h3>
 					</div>
 					<div class="panel-body" method="get">
-						<form class="form-inline" role="form" action="/convertTimeToEpoch"> <!-- javascript:buildTime();"> -->
-							<div class="form-group">
-								<label class="sr-only" for="yearInput">Year</label>
-								<input type="text" class="form-control" id="yearInput" placeholder="YYYY" name="year">
+						<form class="form" role="form" action="/convertTimeToEpoch"> <!-- javascript:buildTime();"> -->
+							<div class="row form-group">
+								<div class="col-xs-3">
+										<label class="sr-only" for="dateInput">Date</label>
+										<input type="date" class="form-control" id="dateInput" name="date">
+								</div>
+								<div class="col-xs-1">
+										<label class="sr-only" for="hourInput">Hour</label>
+										<input type="text" class="form-control" id="hourInput" placeholder="HH" name="hour">
+								</div>
+								<div class="col-xs-1">
+										<label class="sr-only" for="minuteInput">Minute</label>
+										<input type="text" class="form-control" id="minuteInput" placeholder="MM" name="minute">
+								</div>
+								<div class="col-xs-1">
+										<label class="sr-only" for="secondInput">Second</label>
+										<input type="text" class="form-control" id="secondInput" placeholder="SS" name="second">
+								</div>
+								<div class="col-xs-2">
+										<label class="sr-only" for="timeZoneInput">Time Zone</label>
+										<input type="text" class="form-control" id="timeZoneInput" placeholder="GMT" name="timeZone">
+								</div>
+								<div class="col-xs-2">
+									<button type="submit" class="btn btn-default">Convert</button>
+								</div>
 							</div>
-							<div class="form-group">
-								<label class="sr-only" for="monthInput">Month</label>
-								<input type="text" class="form-control" id="monthInput" placeholder="MM" name="month">
-							</div>
-							<div class="form-group">
-								<label class="sr-only" for="dayInput">Day</label>
-								<input type="text" class="form-control" id="dayInput" placeholder="DD" name="day">
-							</div>
-							<div class="form-group">
-								<label class="sr-only" for="hourInput">Hour</label>
-								<input type="text" class="form-control" id="hourInput" placeholder="HH" name="hour">
-							</div>
-							<div class="form-group">
-								<label class="sr-only" for="minuteInput">Minute</label>
-								<input type="text" class="form-control" id="minuteInput" placeholder="MM" name="minute">
-							</div>
-							<div class="form-group">
-								<label class="sr-only" for="secondInput">Second</label>
-								<input type="text" class="form-control" id="secondInput" placeholder="SS" name="second">
-							</div>
-							<div class="form-group">
-								<label class="sr-only" for="timeZoneInput">Time Zone</label>
-								<input type="text" class="form-control" id="timeZoneInput" placeholder="GMT" name="timeZone">
-							</div>
-
-							<button type="submit" class="btn btn-default">Build</button>
 						</form>
 						<textarea class="form-control" name="ResultArea" disabled rows="1" cols="50">{{.Output}}</textarea>
 					</div>

@@ -142,16 +142,14 @@ func convertTimeToEpochHandler(rw http.ResponseWriter, req *http.Request) {
 	var responseData = ResponseData{}
 	var timeString string
 	// Check if long format was passed in
-	if (len(retrieveParam(req, "year")) != 0) {
-		year := req.FormValue("year")
-		month := req.FormValue("month")
-		day := req.FormValue("day")
+	if (len(req.FormValue("date")) != 0) {
+		date := req.FormValue("date")
 		hour := req.FormValue("hour")
 		minute := req.FormValue("minute")
 		second := req.FormValue("second")
 		// timeZone := req.FormValue("timeZone")
 
-		timeString = year + "-" + month + "-" + day + " " + hour + ":" + minute + ":" + second + " +0000 GMT"
+		timeString = date + " " + hour + ":" + minute + ":" + second + " +0000 GMT"
 	} else {
 		timeString = retrieveParam(req, "data")
 	}
