@@ -11,6 +11,7 @@ import (
 	"net/url"
 	"os"
 	"strconv"
+	"strings"
 	"html/template"
 	"time"
 )
@@ -97,10 +98,19 @@ func base64DecodeHandler(rw http.ResponseWriter, req *http.Request) {
 
 func validateJsonHandler(rw http.ResponseWriter, req *http.Request) {
 	InfoLog.Println("validateJsonHandler called")
+
 	input := retrieveParam(req, "data")
 	var responseData = ResponseData{}
 	if (len(input) != 0) {
-		json, err := myTools.ValidateJson([]byte(input))
+		var json []byte
+		var err error
+		filter := req.FormValue("filter")
+		if (len(filter) != 0) {
+			fields := strings.Split(filter, ",")
+			json, err = myTools.FilterJson([]byte(input), fields)
+		} else {
+			json, err = myTools.ValidateJson([]byte(input))
+		}
 		if (err != nil) {
 			json = []byte(err.Error())
 		}

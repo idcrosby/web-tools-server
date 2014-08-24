@@ -88,7 +88,20 @@
 								 <input type="text" class="form-control" id="jsonInput" placeholder="{'json':'data'}" name="data"> -->
 								<textarea class="form-control" rows="10" id="jsonInput" name="data"></textarea>
 							</div>
-							<button type="submit" class="btn btn-default">Validate</button>
+
+    						<label for="filterInput">Filter Fields</label>
+							<div class="row form-group">
+							  <div class="col-lg-12">
+							    <div class="input-group">
+							      <span class="input-group-addon">
+							        <input type="checkbox" id="filterCheck" onClick="filterClick()">
+							      </span>
+							      <input type="text" class="form-control" id="filterInput" placeholder="filter,these,fields" name="filter">
+							    </div><!-- /input-group -->
+							  </div><!-- /.col-lg-6 -->
+							</div><!-- /.row -->
+
+							<button type="submit" id="jsonSubmit" class="btn btn-default">Validate</button>
 						</form>
 						<textarea class="form-control" name="ResultArea" rows="10" id="jsonOutput" disabled>{{.Output}}</textarea>
 					</div>
@@ -125,6 +138,17 @@
 				for (var i = 0, j = textAreas.length; i < j; i++) {
 					if (textAreas[i].name.indexOf("Result") > -1)
 						textAreas[i].style.visibility="hidden";
+				}
+			}
+
+			function filterClick() {
+				selected = document.getElementById("filterCheck")
+				console.log("filter is " + selected.checked)
+				if (selected.checked) {
+					document.getElementById("jsonSubmit").innerHTML = "Filter";
+				} else {
+					document.getElementById("jsonSubmit").innerHTML = "Validate";
+					document.getElementById("filterInput").value = "";
 				}
 			}
 
