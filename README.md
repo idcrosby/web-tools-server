@@ -11,9 +11,12 @@ Front end: HTML/Bootstrap/Javascript
 
 The following functions are availble:
 
-### Json
+### JSON
 
 Json validation and formatting.
+
+Json filtering, remove the selected elements from the JSON data.
+Filter is passed in as comma delimited fields. Sub fields indicated with dot '.' separation.
 
 ### Time
 
@@ -33,5 +36,6 @@ Create hash values in either MD5 or SHA-1 format.
 - Add Validation and Error Handling
 - Handle multiple date types
 - Expand JSON Validator
+	- Add dynamic JSON viewer, for parsing, dynamic filtering, templating 
 - Add description/details
 - Add automated tests
