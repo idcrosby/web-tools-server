@@ -40,7 +40,7 @@
 			      <ul class="nav navbar-nav">
 			        <li><a href="/convertTimeToEpoch">Time</a></li>
 			        <li><a href="/validateJson">JSON</a></li>
-			        <li class="active"><a href="/base64Encode">Base 64</a></li>
+			        <li><a href="/base64Encode">Base 64</a></li>
 			        <li class="dropdown">
 			          <a href="#" class="dropdown-toggle" data-toggle="dropdown">Hashing <span class="caret"></span></a>
 			          <ul class="dropdown-menu" role="menu">
@@ -58,7 +58,7 @@
 			        <button type="submit" class="btn btn-default">Submit</button>
 			      </form>
 			      <ul class="nav navbar-nav navbar-right">
-			        <li><a href="/contact">Contact</a></li>
+			        <li class="active"><a href="/contact">Contact</a></li>
 			        <li class="dropdown">
 			          <a href="#" class="dropdown-toggle" data-toggle="dropdown">Dropdown <span class="caret"></span></a>
 			          <ul class="dropdown-menu" role="menu">
@@ -76,38 +76,25 @@
 
 
 		 	<div class="jumbotron">
-				<div class="panel panel-primary" id="EncodeDiv">
+
+				<div class="panel panel-primary" id="JsonDiv">
 					<div class="panel-heading">
-						<h3 class="panel-title">Base 64 Encoding</h3>
+						<h3 class="panel-title">Provide Feedback</h3>
 					</div>
 					<div class="panel-body" method="get">
-						<form class="form-inline" role="form" action="/base64Encode">
-							<div class="form-group">
-								<label for="encodeInput">To encode</label>
-								<input type="text" class="form-control" id="encodeInput" placeholder="input" name="data">
+						<form role="form" action="/contact">
+							<div id="jsonForm" class="form-group">
+								<label for="senderInput">Sender</label>
+								<input type="text" class="form-control" id="senderInput" placeholder="Queen of England" name="sender">
 							</div>
-							<button type="submit" class="btn btn-default">Encode</button>
+							<div class="form-group">	
+								<label for="feedbackInput">Message</label>
+								<textarea class="form-control" rows="10" id="feedbackInput" placeholder="This site has changed my life because..." name="data"></textarea>
+							</div>
+							<button type="submit" id="jsonSubmit" class="btn btn-default">Send</button>
 						</form>
-						<textarea class="form-control" name="ResultArea" disabled rows="1" cols="50">{{.Output}}</textarea>
 					</div>
 				</div>
-
-				<div class="panel panel-primary" id="DecodeDiv">
-					<div class="panel-heading">
-						<h3 class="panel-title">Base 64 Decoding</h3>
-					</div>
-					<div class="panel-body" method="get">
-						<form id="decodeForm" class="form-inline" role="form" action="/base64Decode">
-							<div class="form-group">
-								<label for="decodeInput">To decode</label>
-								<input type="text" class="form-control" id="decodeInput" placeholder="input" name="data">
-							</div>
-							<button type="submit" class="btn btn-default">Decode</button>
-						</form>
-						<textarea class="form-control" name="ResultArea" disabled rows="1" cols="50">{{.Output}}</textarea>
-					</div>
-				</div>
-
 			</div> <!-- /jumbotron -->
 		</div> <!-- /container -->
 		<script type="text/javascript">
@@ -116,24 +103,21 @@
 				hideAllResultAreas();
 
 				if ("{{.Output}}" != "") {
-					var div = document.getElementById("{{.Field}}");
-					var textAreas = div.getElementsByTagName('textarea');
-					textAreas[0].style.visibility="visible";
-					var inputs = div.getElementsByTagName('input');
-					inputs[0].value="{{.Input}}";
+					var el = document.getElementById("jsonOutput");
+					el.style.visibility="visible";
+					document.getElementById("jsonInput").value="{{.Input}}";
 					var feedbackSpan = document.createElement('span');
 					
 					if ({{.Valid}}) {
-						console.log("valid response for {{.Field}}")
-
+						console.log("valid response for {{.Field}}");
 						feedbackSpan.className="glyphicon glyphicon-ok form-control-feedback";
-						document.getElementById("decodeForm").className="form-group has-success has-feedback";
+						document.getElementById("jsonForm").className="form-group has-success has-feedback";
 					} else {
 						console.log("invalid response for {{.Field}}");
 						feedbackSpan.className="glyphicon glyphicon-remove form-control-feedback";
-						document.getElementById("decodeForm").className="form-group has-error has-feedback";
+						document.getElementById("jsonForm").className="form-group has-error has-feedback";
 					}
-					document.getElementById("decodeForm").appendChild(feedbackSpan);
+					document.getElementById("jsonForm").appendChild(feedbackSpan);
 				}
 			}
 
@@ -146,10 +130,6 @@
 				}
 			}
 
-			function copyDate() {
-				var epoch = Math.round(new Date().getTime()/1000);
-				document.getElementById("epochTimeInput").value=epoch;
-			}
 		</script>
 		<!-- Bootstrap core JavaScript
     	================================================== -->

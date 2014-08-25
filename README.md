@@ -39,3 +39,4 @@ Create hash values in either MD5 or SHA-1 format.
 	- Add dynamic JSON viewer, for parsing, dynamic filtering, templating 
 - Add description/details
 - Add automated tests
+- Implement feedback/comments option

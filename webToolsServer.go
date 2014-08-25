@@ -28,6 +28,7 @@ var jsonHtml = "resources/html/webToolsJson.html"
 var md5Html = "resources/html/webToolsMd5.html"
 var sha1Html = "resources/html/webToolsSha1.html"
 var timeHtml = "resources/html/webToolsTime.html"
+var contactHtml = "resources/html/webToolsContact.html"
 
 func main() {
 	fmt.Println("running server...")
@@ -48,6 +49,7 @@ func main() {
 	http.HandleFunc("/sha1Hash", errorHandler(sha1HashHandler))
 	http.HandleFunc("/convertTimeToEpoch", errorHandler(convertTimeToEpochHandler))
 	http.HandleFunc("/convertTimeFromEpoch", errorHandler(convertTimeFromEpochHandler))
+	http.HandleFunc("/contact", errorHandler(contactHandler))
 
 	// Serve CSS/JS files
 	http.Handle("/resources/", http.StripPrefix("/resources/", http.FileServer(http.Dir("resources"))))
@@ -88,8 +90,11 @@ func base64DecodeHandler(rw http.ResponseWriter, req *http.Request) {
 	decode := retrieveParam(req, "data")
 	var responseData = ResponseData{}
 	if (len(decode) != 0) {
-		decoded := myTools.Base64Decode(decode, false)
-		responseData = ResponseData{Input: decode, Output: string(decoded), Field: "DecodeDiv", Valid: true}
+		decoded, err := myTools.Base64Decode(decode, false)
+		if (err != nil) {
+			decoded = []byte(err.Error())
+		}
+		responseData = ResponseData{Input: decode, Output: string(decoded), Field: "DecodeDiv", Valid: (err == nil)}
 	}
 	var resultTemplate, err = template.ParseFiles(base64Html)
 	check(err)
@@ -184,6 +189,17 @@ func convertTimeFromEpochHandler(rw http.ResponseWriter, req *http.Request) {
 		responseData = ResponseData{Input: input, Output: time.String(), Field: "TimeFromEpochDiv", Valid: true}
 	}
 	var resultTemplate, err = template.ParseFiles(timeHtml)
+	check(err)
+	resultTemplate.Execute(rw, responseData)
+}
+
+func contactHandler(rw http.ResponseWriter, req *http.Request) {
+	InfoLog.Println("contactHandler called")
+	var responseData = ResponseData{}
+
+	// send email ...
+
+	var resultTemplate, err = template.ParseFiles(contactHtml)
 	check(err)
 	resultTemplate.Execute(rw, responseData)
 }
