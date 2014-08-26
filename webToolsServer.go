@@ -111,8 +111,13 @@ func validateJsonHandler(rw http.ResponseWriter, req *http.Request) {
 		var err error
 		filter := req.FormValue("filter")
 		if (len(filter) != 0) {
+			whiteList := req.FormValue("whitelist")
 			fields := strings.Split(filter, ",")
-			json, err = myTools.FilterJson([]byte(input), fields)
+			if (whiteList == "true") {
+				json, err = myTools.JsonPositiveFilter([]byte(input), fields)
+			} else {
+				json, err = myTools.JsonNegativeFilter([]byte(input), fields)
+			}
 		} else {
 			json, err = myTools.ValidateJson([]byte(input))
 		}
