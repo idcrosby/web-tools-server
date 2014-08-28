@@ -39,7 +39,13 @@
 			    <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
 			      <ul class="nav navbar-nav">
 			        <li class="active"><a href="/convertTimeToEpoch">Time</a></li>
-			        <li><a href="/validateJson">JSON</a></li>
+			        <li class="dropdown">
+			          <a href="#" class="dropdown-toggle" data-toggle="dropdown">JSON <span class="caret"></span></a>
+			          <ul class="dropdown-menu" role="menu">
+			            <li><a href="/validateJson">Validate/Format</a></li>
+			            <li><a href="/compareJson">Compare</a></li>
+			          </ul>
+			        </li>
 			        <li><a href="/base64Encode">Base 64</a></li>
 			        <li class="dropdown">
 			          <a href="#" class="dropdown-toggle" data-toggle="dropdown">Hashing <span class="caret"></span></a>
@@ -96,7 +102,7 @@
 						<form class="form-inline" role="form" action="/convertTimeFromEpoch">
 							<div class="form-group">
 								<label for="epochTimeInput">Unix Epoch Time</label>
-								<input type="text" class="form-control" id="epochTimeInput" placeholder="time in seconds" name="data">
+								<input type="number" class="form-control" id="epochTimeInput" placeholder="time in seconds" name="data">
 							</div>
 							<button type="submit" class="btn btn-default">Convert</button>
 						</form>
@@ -137,22 +143,26 @@
 										<label class="sr-only" for="dateInput">Date</label>
 										<input type="date" class="form-control" id="dateInput" name="date">
 								</div>
-								<div class="col-xs-1">
+								<div class="col-xs-2">
 										<label class="sr-only" for="hourInput">Hour</label>
-										<input type="text" class="form-control" id="hourInput" placeholder="HH" name="hour">
-								</div>
-								<div class="col-xs-1">
-										<label class="sr-only" for="minuteInput">Minute</label>
-										<input type="text" class="form-control" id="minuteInput" placeholder="MM" name="minute">
-								</div>
-								<div class="col-xs-1">
-										<label class="sr-only" for="secondInput">Second</label>
-										<input type="text" class="form-control" id="secondInput" placeholder="SS" name="second">
+										<input type="number" min="0" max="23" class="form-control" id="hourInput" placeholder="HH" name="hour">
 								</div>
 								<div class="col-xs-2">
-										<label class="sr-only" for="timeZoneInput">Time Zone</label>
-										<input type="text" class="form-control" id="timeZoneInput" placeholder="GMT" name="timeZone">
+										<label class="sr-only" for="minuteInput">Minute</label>
+										<input type="number" min="0" max="59" class="form-control" id="minuteInput" placeholder="MM" name="minute">
 								</div>
+								<div class="col-xs-2">
+										<label class="sr-only" for="secondInput">Second</label>
+										<input type="number" min="0" max="59" class="form-control" id="secondInput" placeholder="SS" name="second">
+								</div>
+								<!-- <div class="col-xs-2">
+										<label class="sr-only" for="timeZoneInput">Time Zone</label>
+										<select class="form-control" id="timeZoneInput" name="timeZone">
+											<option>GMT</option>
+											<option>Local</option>
+										</select>
+										<input type="text" class="form-control" id="timeZoneInput" placeholder="GMT" name="timeZone"> 
+								</div> -->
 								<div class="col-xs-2">
 									<button type="submit" class="btn btn-default">Convert</button>
 								</div>

@@ -39,9 +39,15 @@
 			    <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
 			      <ul class="nav navbar-nav">
 			        <li><a href="/convertTimeToEpoch">Time</a></li>
-			        <li><a href="/validateJson">JSON</a></li>
-			        <li><a href="/base64Encode">Base 64</a></li>
 			        <li class="dropdown">
+			          <a href="#" class="dropdown-toggle" data-toggle="dropdown">JSON <span class="caret"></span></a>
+			          <ul class="dropdown-menu" role="menu">
+			            <li><a href="/validateJson">Validate/Format</a></li>
+			            <li><a href="/compareJson">Compare</a></li>
+			          </ul>
+			        </li>
+			        <li><a href="/base64Encode">Base 64</a></li>
+			        <li class="dropdown active">
 			          <a href="#" class="dropdown-toggle" data-toggle="dropdown">Hashing <span class="caret"></span></a>
 			          <ul class="dropdown-menu" role="menu">
 			            <li><a href="/md5Hash">MD5 </a></li>

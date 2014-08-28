@@ -39,11 +39,11 @@
 			    <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
 			      <ul class="nav navbar-nav">
 			        <li><a href="/convertTimeToEpoch">Time</a></li>
-			        <li class="dropdown">
+			        <li class="dropdown active">
 			          <a href="#" class="dropdown-toggle" data-toggle="dropdown">JSON <span class="caret"></span></a>
 			          <ul class="dropdown-menu" role="menu">
 			            <li><a href="/validateJson">Validate/Format</a></li>
-			            <li><a href="/compareJson">Compare</a></li>
+			            <li class="active"><a href="/compareJson">Compare</a></li>
 			          </ul>
 			        </li>
 			        <li><a href="/base64Encode">Base 64</a></li>
@@ -64,7 +64,7 @@
 			        <button type="submit" class="btn btn-default">Submit</button>
 			      </form>
 			      <ul class="nav navbar-nav navbar-right">
-			        <li class="active"><a href="/contact">Contact</a></li>
+			        <li><a href="/contact">Contact</a></li>
 			        <li class="dropdown">
 			          <a href="#" class="dropdown-toggle" data-toggle="dropdown">Dropdown <span class="caret"></span></a>
 			          <ul class="dropdown-menu" role="menu">
@@ -85,20 +85,23 @@
 
 				<div class="panel panel-primary" id="JsonDiv">
 					<div class="panel-heading">
-						<h3 class="panel-title">Provide Feedback</h3>
+						<h3 class="panel-title">JSON Compare</h3>
 					</div>
 					<div class="panel-body" method="get">
-						<form role="form" action="/contact">
-							<div id="jsonForm" class="form-group">
-								<label for="senderInput">Sender</label>
-								<input type="text" class="form-control" id="senderInput" placeholder="Queen of England" name="sender">
+						<form role="form" action="/compareJson">
+							<div id="jsonFOne" class="form-group">
+								<!--<label for="jsonInput">To decode</label>
+								 <input type="text" class="form-control" id="jsonInput" placeholder="{'json':'data'}" name="data"> -->
+								<textarea class="form-control" rows="10" id="jsonInputOne" name="jsonOne"></textarea>
 							</div>
-							<div class="form-group">	
-								<label for="feedbackInput">Message</label>
-								<textarea class="form-control" rows="10" id="feedbackInput" placeholder="This site has changed my life because..." name="data"></textarea>
+							<div id="jsonTwo" class="form-group">
+								<!--<label for="jsonInput">To decode</label>
+								 <input type="text" class="form-control" id="jsonInput" placeholder="{'json':'data'}" name="data"> -->
+								<textarea class="form-control" rows="10" id="jsonInputTwo" name="jsonTwo"></textarea>
 							</div>
-							<button type="submit" id="jsonSubmit" class="btn btn-default">Send</button>
+							<button type="submit" id="jsonSubmit" class="btn btn-default">Compare</button>
 						</form>
+						<textarea class="form-control" name="ResultArea" rows="10" id="jsonOutput" disabled>{{.Output}}</textarea>
 					</div>
 				</div>
 			</div> <!-- /jumbotron -->

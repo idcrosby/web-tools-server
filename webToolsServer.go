@@ -22,16 +22,18 @@ var Verbose bool
 
 // Constants
 
+var OUTPUT_DIR = "output/"
+
 var homeHtml = "resources/html/webToolsHome.html"
 var base64Html = "resources/html/webToolsBase64.html"
 var jsonHtml = "resources/html/webToolsJson.html"
+var compareJsonHtml = "resources/html/webToolsCompareJson.html"
 var md5Html = "resources/html/webToolsMd5.html"
 var sha1Html = "resources/html/webToolsSha1.html"
 var timeHtml = "resources/html/webToolsTime.html"
 var contactHtml = "resources/html/webToolsContact.html"
 
 func main() {
-	fmt.Println("running server...")
 
 	// Define flags
 	flag.BoolVar(&Verbose, "verbose", false, "Turn on verbose logging.")
@@ -45,6 +47,7 @@ func main() {
 	http.HandleFunc("/base64Encode", errorHandler(base64EncodeHandler))
 	http.HandleFunc("/base64Decode", errorHandler(base64DecodeHandler))
 	http.HandleFunc("/validateJson", errorHandler(validateJsonHandler))
+	http.HandleFunc("/compareJson", errorHandler(compareJsonHandler))
 	http.HandleFunc("/md5Hash", errorHandler(md5HashHandler))
 	http.HandleFunc("/sha1Hash", errorHandler(sha1HashHandler))
 	http.HandleFunc("/convertTimeToEpoch", errorHandler(convertTimeToEpochHandler))
@@ -58,7 +61,7 @@ func main() {
 	if port == "" {
 		port = "8087"
 	}
-	fmt.Println("PORT:", port)
+	fmt.Println("Server running on Port:", port)
 	http.ListenAndServe(":" + port, nil)
 }
 
@@ -121,13 +124,33 @@ func validateJsonHandler(rw http.ResponseWriter, req *http.Request) {
 		} else {
 			json, err = myTools.ValidateJson([]byte(input))
 		}
-		if (err != nil) {
+		if err != nil {
 			json = []byte(err.Error())
 		}
 		responseData = ResponseData{Input: input, Output: string(json), Field: "JsonDiv", Valid: (err == nil)}
 	}
 	var resultTemplate, err = template.ParseFiles(jsonHtml)
 	check(err)
+	resultTemplate.Execute(rw, responseData)
+}
+
+func compareJsonHandler(rw http.ResponseWriter, req *http.Request) {
+	InfoLog.Println("compareJsonHandler called")
+
+	jsonOne := req.FormValue("jsonOne")
+	jsonTwo := req.FormValue("jsonTwo")
+
+	result, err := myTools.JsonCompare([]byte(jsonOne), []byte(jsonTwo))
+
+	if err != nil {
+		result = []byte(err.Error())
+	}
+	
+	// TODO pass both inputs...?
+	responseData := ResponseData{Input: jsonOne, Output: string(result), Field: "JsonDiv", Valid: (err == nil)}
+	
+	var resultTemplate, err1 = template.ParseFiles(compareJsonHtml)
+	check(err1)
 	resultTemplate.Execute(rw, responseData)
 }
 
@@ -201,11 +224,31 @@ func convertTimeFromEpochHandler(rw http.ResponseWriter, req *http.Request) {
 func contactHandler(rw http.ResponseWriter, req *http.Request) {
 	InfoLog.Println("contactHandler called")
 	var responseData = ResponseData{}
+	now := time.Now()
 
-	// send email ...
+	message := now.String() + "\n"
+	message += "From: "
+	message += retrieveParam(req, "sender") + "\n"
+	message += retrieveParam(req, "data") + "\n<EOM>\n"
 
-	var resultTemplate, err = template.ParseFiles(contactHtml)
-	check(err)
+	year, month, day := now.Date()
+	// TODO send email ... 
+	// ... for now save to file (could also move to DB?)
+	fileName := OUTPUT_DIR + strconv.Itoa(year) + "-" + month.String() + "-" + strconv.Itoa(day) + "-messages.txt"
+
+	if _, err := os.Stat(fileName); err != nil {
+		_, err = os.Create(fileName)
+	}
+
+	f, err := os.OpenFile(fileName, os.O_APPEND, 0644)
+
+	defer f.Close()
+
+	if _, err = f.WriteString(message); err != nil {
+		panic(err)
+	}
+
+	var resultTemplate, _ = template.ParseFiles(contactHtml)
 	resultTemplate.Execute(rw, responseData)
 }
 
@@ -254,11 +297,6 @@ func requestAsString(request *http.Request) []byte {
 
 	return buffer.Bytes()
 }
-
-// type Data struct {
-// 	EncodeValid, DecodeValid, JsonValid, Md5Valid, Sha1Valid, EpochTimeValid, ReadableTimeValid bool
-// 	EncodeResult, DecodeResult, JsonResult, Md5Result, Sha1Result, EpochTimeResult, ReadableTimeResult string
-// }
 
 type ResponseData struct {
 	Input, Output, Field string

@@ -33,10 +33,10 @@ Create hash values in either MD5 or SHA-1 format.
 
 ## TODO List
 
-- Add Validation and Error Handling
-- Handle multiple date types
 - Expand JSON Validator
-	- Add dynamic JSON viewer, for parsing, dynamic filtering, templating 
-- Add description/details
+	- Add dynamic JSON viewer, for parsing, dynamic filtering, templating
+	- Json Compare
+	- Whitelist filtering
 - Add automated tests
-- Implement feedback/comments option
+- Send feedback as email / store in DB
+- Handle Time Zone input
