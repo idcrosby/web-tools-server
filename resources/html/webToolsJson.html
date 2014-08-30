@@ -95,16 +95,28 @@
 								<textarea class="form-control" rows="10" id="jsonInput" name="data"></textarea>
 							</div>
 
-    						<label for="filterInput">Filter Fields</label>
+    						<label for="filterInput">Whitelist Filter Fields</label>
 							<div class="row form-group">
-							  <div class="col-lg-12">
+							   <div class="col-lg-12">
 							    <div class="input-group">
 							      <span class="input-group-addon">
-							        <input type="checkbox" id="filterCheck" onClick="filterClick()">
+							        <input type="checkbox" id="whiteListfilterCheck" onClick="filterClick('whiteList', this)">
 							      </span>
-							      <input type="text" class="form-control" id="filterInput" readOnly placeholder="filter,these.fields" name="filter">
+							      <input type="text" class="form-control" id="whiteListFilterInput" readOnly placeholder="keep,only,these.fields" name="whiteListFilter">
 							    </div><!-- /input-group -->
-							  </div><!-- /.col-lg-6 -->
+							   </div><!-- /.col-lg-6 -->
+							</div><!-- /.row -->
+
+    						<label for="filterInput">Blacklist Filter Fields</label>
+							<div class="row form-group">
+							   <div class="col-lg-12">
+							    <div class="input-group">
+							      <span class="input-group-addon">
+							        <input type="checkbox" id="blackListfilterCheck" onClick="filterClick('blackList', this)">
+							      </span>
+							      <input type="text" class="form-control" id="blackListFilterInput" readOnly placeholder="remove,these.fields" name="blackListFilter">
+							    </div><!-- /input-group -->
+							   </div><!-- /.col-lg-6 -->
 							</div><!-- /.row -->
 
 							<button type="submit" id="jsonSubmit" class="btn btn-default">Validate</button>
@@ -147,17 +159,53 @@
 				}
 			}
 
-			function filterClick() {
-				selected = document.getElementById("filterCheck")
-				console.log("filter is " + selected.checked)
-				if (selected.checked) {
-					document.getElementById("jsonSubmit").innerHTML = "Filter";
-					document.getElementById("filterInput").readOnly = false;
-				} else {
-					document.getElementById("jsonSubmit").innerHTML = "Validate";
-					document.getElementById("filterInput").value = "";
-					document.getElementById("filterInput").readOnly = true;	
+			function filterClick(filter, el) {
+				console.log(filter + " filter is " + el.checked)
+				whiteListfilterInput = document.getElementById("whiteListFilterInput");
+				blackListfilterInput = document.getElementById("blackListFilterInput");
+
+				if (filter == "whiteList") {
+					if (el.checked) {
+						document.getElementById("blackListfilterCheck").checked = false;
+						document.getElementById("jsonSubmit").innerHTML = "Filter";
+						whiteListfilterInput.readOnly = false;
+						blackListfilterInput.value = "";
+						blackListfilterInput.readOnly = true;
+					} else {
+						document.getElementById("jsonSubmit").innerHTML = "Validate";
+						whiteListfilterInput.value = "";
+						whiteListfilterInput.readOnly = true;	
+					}
+				} else if (filter == "blackList") {
+					if (el.checked) {
+						document.getElementById("whiteListfilterCheck").checked = false;
+						document.getElementById("jsonSubmit").innerHTML = "Filter";
+						blackListfilterInput.readOnly = false;
+						whiteListfilterInput.value = "";
+						whiteListfilterInput.readOnly = true;	
+					} else {
+						document.getElementById("jsonSubmit").innerHTML = "Validate";
+						blackListfilterInput.value = "";
+						blackListfilterInput.readOnly = true;	
+					}
 				}
+				// whiteList = document.getElementById("whiteListfilterCheck")
+				// blackList = document.getElementById("blackListfilterCheck")
+
+				// console.log(filter + " filter is " + el.checked)
+				// // console.log("whitelist filter is " + whiteList.checked)
+				// // console.log("blacklist filter is " + blackList.checked)
+				// if (whiteList.checked) {
+				// 	document.getElementById("jsonSubmit").innerHTML = "Filter";
+				// 	document.getElementById("filterInput").readOnly = false;
+				// } else if (whiteList.checked) {
+				// 	document.getElementById("jsonSubmit").innerHTML = "Filter";
+				// 	document.getElementById("filterInput").readOnly = false;
+				// } else {
+				// 	document.getElementById("jsonSubmit").innerHTML = "Validate";
+				// 	document.getElementById("filterInput").value = "";
+				// 	document.getElementById("filterInput").readOnly = true;	
+				// }
 			}
 
 		</script>

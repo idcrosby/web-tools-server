@@ -15,7 +15,7 @@ The following functions are availble:
 
 Json validation and formatting.
 
-Json filtering, remove the selected elements from the JSON data.
+Json filtering, remove (or keep) only the selected elements from the JSON data.
 Filter is passed in as comma delimited fields. Sub fields indicated with dot '.' separation.
 
 ### Time
@@ -36,7 +36,6 @@ Create hash values in either MD5 or SHA-1 format.
 - Expand JSON Validator
 	- Add dynamic JSON viewer, for parsing, dynamic filtering, templating
 	- Json Compare
-	- Whitelist filtering
 - Add automated tests
 - Send feedback as email / store in DB
 - Handle Time Zone input
