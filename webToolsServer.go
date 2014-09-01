@@ -46,6 +46,7 @@ func main() {
 	http.HandleFunc("/", errorHandler(defaultHandler))
 	http.HandleFunc("/base64Encode", errorHandler(base64EncodeHandler))
 	http.HandleFunc("/base64Decode", errorHandler(base64DecodeHandler))
+	http.HandleFunc("/urlEncode", errorHandler(urlEncodeHandler))
 	http.HandleFunc("/validateJson", errorHandler(validateJsonHandler))
 	http.HandleFunc("/compareJson", errorHandler(compareJsonHandler))
 	http.HandleFunc("/md5Hash", errorHandler(md5HashHandler))
@@ -102,6 +103,33 @@ func base64DecodeHandler(rw http.ResponseWriter, req *http.Request) {
 	var resultTemplate, err = template.ParseFiles(base64Html)
 	check(err)
 	resultTemplate.Execute(rw, responseData)
+}
+
+func urlEncodeHandler(rw http.ResponseWriter, req *http.Request) {
+	InfoLog.Println("urlEncodeHandler called")
+	var responseData = ResponseData{}	
+	var output, field string
+	var err error
+
+	data := retrieveParam(req, "encode")
+	if len(data) != 0 {
+		field = "UrlEncodeDiv"
+		output = myTools.UrlEncode(data)
+	} else {
+		data = retrieveParam(req, "decode")
+		if len(data) != 0 {
+			output, err = myTools.UrlDecode(data)
+			field = "UrlDecodeDiv"
+			if (err != nil) {
+				output = err.Error()
+			}
+		}
+	}
+
+	responseData = ResponseData{Input: data, Output: output, Field: field, Valid: true}
+	var resultTemplate, err2 = template.ParseFiles(base64Html)
+	check(err2)
+	resultTemplate.Execute(rw, responseData) 
 }
 
 func validateJsonHandler(rw http.ResponseWriter, req *http.Request) {

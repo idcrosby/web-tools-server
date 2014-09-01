@@ -46,7 +46,7 @@
 			            <li><a href="/compareJson">Compare</a></li>
 			          </ul>
 			        </li>
-			        <li class="active"><a href="/base64Encode">Base 64</a></li>
+			        <li class="active"><a href="/base64Encode">Encoding</a></li>
 			        <li class="dropdown">
 			          <a href="#" class="dropdown-toggle" data-toggle="dropdown">Hashing <span class="caret"></span></a>
 			          <ul class="dropdown-menu" role="menu">
@@ -114,6 +114,37 @@
 					</div>
 				</div>
 
+				<div class="panel panel-primary" id="UrlEncodeDiv">
+					<div class="panel-heading">
+						<h3 class="panel-title">URL Encoding</h3>
+					</div>
+					<div class="panel-body" method="get">
+						<form id="urlEncodeForm" class="form-inline" role="form" action="/urlEncode">
+							<div class="form-group">
+								<label for="urlEncodeInput">To encode</label>
+								<input type="text" class="form-control" id="urlEncodeInput" placeholder="input" name="encode">
+							</div>
+							<button type="submit" class="btn btn-default">Encode</button>
+						</form>
+						<textarea class="form-control" name="ResultArea" disabled rows="1" cols="50">{{.Output}}</textarea>
+					</div>
+				</div>
+
+				<div class="panel panel-primary" id="UrlDecodeDiv">
+					<div class="panel-heading">
+						<h3 class="panel-title">URL Decoding</h3>
+					</div>
+					<div class="panel-body" method="get">
+						<form id="urlEncodeForm" class="form-inline" role="form" action="/urlEncode">
+							<div class="form-group">
+								<label for="urlEncodeInput">To decode</label>
+								<input type="text" class="form-control" id="urlDecodeInput" placeholder="input" name="decode">
+							</div>
+							<button type="submit" class="btn btn-default">Decode</button>
+						</form>
+						<textarea class="form-control" name="ResultArea" disabled rows="1" cols="50">{{.Output}}</textarea>
+					</div>
+				</div>
 			</div> <!-- /jumbotron -->
 		</div> <!-- /container -->
 		<script type="text/javascript">
