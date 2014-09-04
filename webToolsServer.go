@@ -32,6 +32,7 @@ var md5Html = "resources/html/webToolsMd5.html"
 var sha1Html = "resources/html/webToolsSha1.html"
 var timeHtml = "resources/html/webToolsTime.html"
 var contactHtml = "resources/html/webToolsContact.html"
+var apiHtml = "resources/html/webToolsAPI.html"
 
 func main() {
 
@@ -54,6 +55,7 @@ func main() {
 	http.HandleFunc("/convertTimeToEpoch", errorHandler(convertTimeToEpochHandler))
 	http.HandleFunc("/convertTimeFromEpoch", errorHandler(convertTimeFromEpochHandler))
 	http.HandleFunc("/contact", errorHandler(contactHandler))
+	http.HandleFunc("/api", errorHandler(apiHandler))
 
 	// Serve CSS/JS files
 	http.Handle("/resources/", http.StripPrefix("/resources/", http.FileServer(http.Dir("resources"))))
@@ -280,6 +282,12 @@ func contactHandler(rw http.ResponseWriter, req *http.Request) {
 	var resultTemplate, _ = template.ParseFiles(contactHtml)
 	resultTemplate.Execute(rw, responseData)
 }
+
+func apiHandler(rw http.ResponseWriter, req *http.Request) {
+	t,_ := template.ParseFiles(apiHtml)
+	t.Execute(rw, nil)
+}
+
 
 // Error Handler Wrapper
 func errorHandler(fn http.HandlerFunc) http.HandlerFunc {
