@@ -15,12 +15,11 @@
     	<!-- Bootstrap theme -->
     	<link href="/resources/css/bootstrap-theme.min.css" rel="stylesheet">
 
-	    <!-- Custom styles for this template  -->
-    	<link href="/resources/css/custom.css" rel="stylesheet">
-
+	    <!-- Custom styles for this template 
+    	<link href="navbar.css" rel="stylesheet"> -->
 	</head>
 
-	<body>
+	<body onload="init()">
 
 	    <div class="container">
 			<div class="navbar navbar-default" role="navigation">
@@ -48,7 +47,7 @@
 			          </ul>
 			        </li>
 			        <li><a href="/base64Encode">Encoding</a></li>
-			        <li><a href="/md5Hash">Hashing</a></li>
+			        <li class="active"><a href="/md5Hash">Hashing</a></li>
 			      </ul>
 			      <form class="navbar-form navbar-left" role="search" action="/search">
 			        <div class="form-group">
@@ -58,10 +57,10 @@
 			      </form>
 			      <ul class="nav navbar-nav navbar-right">
 			        <li><a href="/contact">Contact</a></li>
-			        <li class="dropdown active">
+			        <li class="dropdown">
 			          <a href="#" class="dropdown-toggle" data-toggle="dropdown">More <span class="caret"></span></a>
 			          <ul class="dropdown-menu" role="menu">
-			            <li class="active"><a href="/api">API</a></li>
+			            <li><a href="/api">API</a></li>
 			            <li><a href="#">Another action</a></li>
 			            <li><a href="#">Something else here</a></li>
 			            <li class="divider"></li>
@@ -76,61 +75,66 @@
 
 		 	<div class="jumbotron">
 
-		 		<table class="table table-striped">
-		 			<tr>
-		 				<th>Endpoint</th>
-		 				<th>Parameters</th>
-		 				<th>Description</th>
-		 			</tr>
-		 			<tr>
-		 				<td>/convertTimeFromEpoch</td>
-		 				<td>data</td>
-		 				<td>Convert Readable Time to Epoch Time</td>
-		 			</tr>
-		 			<tr>
-		 				<td>/convertTimeToEpoch</td>
-		 				<td>data</td>
-		 				<td>Convert Epoch Time to Readable Time</td>
-		 			</tr>
-		 			<tr>
-		 				<td>/validateJson</td>
-		 				<td>data, whiteListFilter, blackListFilter</td>
-		 				<td>Validate a JSON object. Optional filter parameters allow for white or black list filering of the response. The repsonse is also formatted.</td>
-		 			</tr>
-		 			<tr>
-		 				<td>/copareJson</td>
-		 				<td>jsonOne, jsonTwo</td>
-		 				<td>Compare two JSON objects. A JSON object containing only the differences is returned.</td>
-		 			</tr>
-		 			<tr>
-		 				<td>/base64Encode</td>
-		 				<td>data</td>
-		 				<td>Base 64 encode a string.</td>
-		 			</tr>
-		 			<tr>
-		 				<td>/base64Decode</td>
-		 				<td>data</td>
-		 				<td>Base 64 decode an encoded string.</td>
-		 			</tr>
-		 			<tr>
-		 				<td>/urlEncode</td>
-		 				<td>encode,decode</td>
-		 				<td>URL encode (or decode) a string based on the query parameter.</td>
-		 			</tr>
-		 			<tr>
-		 				<td>/md5Hash</td>
-		 				<td>data</td>
-		 				<td>Create an MD5 Hash of a string.</td>
-		 			</tr>
-		 			<tr>
-		 				<td>/sha1Hash</td>
-		 				<td>data</td>
-		 				<td>Create a SHA-1 Hash of a string.</td>
-		 			</tr>
-		 		</table>
+				<div class="panel panel-primary" id="Md5HashDiv">
+					<div class="panel-heading">
+						<h3 class="panel-title">Md5 Hashing</h3>
+					</div>
+					<div class="panel-body" method="get">
+						<form class="form-inline" role="form" action="/md5Hash">
+							<div class="form-group">
+								<label for="md5Input">Value to Hash</label>
+								<input type="text" class="form-control" id="md5Input" placeholder="input" name="data">
+							</div>
+							<button type="submit" class="btn btn-default">Hash</button>
+						</form>
+						<textarea class="form-control" name="ResultArea" disabled rows="1" cols="50">{{.Output}}</textarea>
+					</div>
+				</div>
+
+				<div class="panel panel-primary" id="Sha1HashDiv">
+					<div class="panel-heading">
+						<h3 class="panel-title">SHA-1 Hashing</h3>
+					</div>
+					<div class="panel-body" method="get">
+						<form class="form-inline" role="form" action="/sha1Hash">
+							<div class="form-group">
+								<label for="sha1Input">Value to Hash</label>
+								<input type="text" class="form-control" id="sha1Input" placeholder="input" name="data">
+							</div>
+							<button type="submit" class="btn btn-default">Hash</button>
+						</form>
+						<textarea class="form-control" name="ResultArea" disabled rows="1" cols="50">{{.Output}}</textarea>
+					</div>
+				</div>
 
 			</div> <!-- /jumbotron -->
 		</div> <!-- /container -->
+		<script type="text/javascript">
+			
+			function init() {
+				hideAllResultAreas();
+
+				if ({{.Valid}}) {
+					console.log("valid response for {{.Field}}")
+
+					var div = document.getElementById("{{.Field}}");
+					var textAreas = div.getElementsByTagName('textarea');
+					textAreas[0].style.visibility="visible";
+					var inputs = div.getElementsByTagName('input');
+					inputs[0].value="{{.Input}}";
+				}
+			}
+
+			function hideAllResultAreas() {
+				console.log("hiding all...")
+				var textAreas = document.getElementsByTagName('textarea');
+				for (var i = 0, j = textAreas.length; i < j; i++) {
+					if (textAreas[i].name.indexOf("Result") > -1)
+						textAreas[i].style.visibility="hidden";
+				}
+			}
+
+		</script>
 		<!-- Bootstrap core JavaScript
     	================================================== -->
 	    <!-- Placed at the end of the document so the pages load faster -->

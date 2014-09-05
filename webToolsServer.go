@@ -25,14 +25,14 @@ var Verbose bool
 var OUTPUT_DIR = "output/"
 
 var homeHtml = "resources/html/webToolsHome.html"
-var base64Html = "resources/html/webToolsBase64.html"
+var encodingHtml = "resources/html/webToolsEncoding.html"
 var jsonHtml = "resources/html/webToolsJson.html"
 var compareJsonHtml = "resources/html/webToolsCompareJson.html"
-var md5Html = "resources/html/webToolsMd5.html"
-var sha1Html = "resources/html/webToolsSha1.html"
+var hashingHtml = "resources/html/webToolsHashing.html"
 var timeHtml = "resources/html/webToolsTime.html"
 var contactHtml = "resources/html/webToolsContact.html"
 var apiHtml = "resources/html/webToolsAPI.html"
+var searchHtml = "resources/html/webToolsSearch.html"
 
 func main() {
 
@@ -56,6 +56,7 @@ func main() {
 	http.HandleFunc("/convertTimeFromEpoch", errorHandler(convertTimeFromEpochHandler))
 	http.HandleFunc("/contact", errorHandler(contactHandler))
 	http.HandleFunc("/api", errorHandler(apiHandler))
+	http.HandleFunc("/search", errorHandler(searchHandler))
 
 	// Serve CSS/JS files
 	http.Handle("/resources/", http.StripPrefix("/resources/", http.FileServer(http.Dir("resources"))))
@@ -86,7 +87,7 @@ func base64EncodeHandler(rw http.ResponseWriter, req *http.Request) {
 		encoded := myTools.Base64Encode([]byte(encode), false)
 		responseData = ResponseData{Input: encode, Output: encoded, Field: "EncodeDiv", Valid: true}
 	}
-	var resultTemplate, err = template.ParseFiles(base64Html)
+	var resultTemplate, err = template.ParseFiles(encodingHtml)
 	check(err)
 	resultTemplate.Execute(rw, responseData) 
 }
@@ -102,7 +103,7 @@ func base64DecodeHandler(rw http.ResponseWriter, req *http.Request) {
 		}
 		responseData = ResponseData{Input: decode, Output: string(decoded), Field: "DecodeDiv", Valid: (err == nil)}
 	}
-	var resultTemplate, err = template.ParseFiles(base64Html)
+	var resultTemplate, err = template.ParseFiles(encodingHtml)
 	check(err)
 	resultTemplate.Execute(rw, responseData)
 }
@@ -129,7 +130,7 @@ func urlEncodeHandler(rw http.ResponseWriter, req *http.Request) {
 	}
 
 	responseData = ResponseData{Input: data, Output: output, Field: field, Valid: true}
-	var resultTemplate, err2 = template.ParseFiles(base64Html)
+	var resultTemplate, err2 = template.ParseFiles(encodingHtml)
 	check(err2)
 	resultTemplate.Execute(rw, responseData) 
 }
@@ -193,7 +194,7 @@ func md5HashHandler(rw http.ResponseWriter, req *http.Request) {
 		hash := myTools.Md5Hash([]byte(input))
 		responseData = ResponseData{Input: input, Output: hash, Field: "Md5HashDiv", Valid: true}
 	}
-	var resultTemplate, err = template.ParseFiles(md5Html)
+	var resultTemplate, err = template.ParseFiles(hashingHtml)
 	check(err)
 	resultTemplate.Execute(rw, responseData)
 }
@@ -206,7 +207,7 @@ func sha1HashHandler(rw http.ResponseWriter, req *http.Request) {
 		hash := myTools.Sha1Hash([]byte(input))
 		responseData = ResponseData{Input: input, Output: hash, Field: "Sha1HashDiv", Valid: true}
 	}
-	var resultTemplate, err = template.ParseFiles(sha1Html)
+	var resultTemplate, err = template.ParseFiles(hashingHtml)
 	check(err)
 	resultTemplate.Execute(rw, responseData)
 }
@@ -284,10 +285,18 @@ func contactHandler(rw http.ResponseWriter, req *http.Request) {
 }
 
 func apiHandler(rw http.ResponseWriter, req *http.Request) {
+	InfoLog.Println("apiHandler called")
 	t,_ := template.ParseFiles(apiHtml)
 	t.Execute(rw, nil)
 }
 
+func searchHandler(rw http.ResponseWriter, req *http.Request) {
+	InfoLog.Println("searchHandler called")
+	search := retrieveParam(req, "data")
+	responseData := ResponseData{Input: search, Output: search, Field: "Search", Valid: true}
+	t,_ := template.ParseFiles(searchHtml)
+	t.Execute(rw, responseData)
+}
 
 // Error Handler Wrapper
 func errorHandler(fn http.HandlerFunc) http.HandlerFunc {

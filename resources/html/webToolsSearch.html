@@ -15,12 +15,11 @@
     	<!-- Bootstrap theme -->
     	<link href="/resources/css/bootstrap-theme.min.css" rel="stylesheet">
 
-	    <!-- Custom styles for this template  -->
-    	<link href="/resources/css/custom.css" rel="stylesheet">
-
+	    <!-- Custom styles for this template 
+    	<link href="navbar.css" rel="stylesheet"> -->
 	</head>
 
-	<body>
+	<body onload="init()">
 
 	    <div class="container">
 			<div class="navbar navbar-default" role="navigation">
@@ -58,10 +57,10 @@
 			      </form>
 			      <ul class="nav navbar-nav navbar-right">
 			        <li><a href="/contact">Contact</a></li>
-			        <li class="dropdown active">
+			        <li class="dropdown">
 			          <a href="#" class="dropdown-toggle" data-toggle="dropdown">More <span class="caret"></span></a>
 			          <ul class="dropdown-menu" role="menu">
-			            <li class="active"><a href="/api">API</a></li>
+			            <li><a href="/api">API</a></li>
 			            <li><a href="#">Another action</a></li>
 			            <li><a href="#">Something else here</a></li>
 			            <li class="divider"></li>
@@ -75,62 +74,16 @@
 
 
 		 	<div class="jumbotron">
-
-		 		<table class="table table-striped">
-		 			<tr>
-		 				<th>Endpoint</th>
-		 				<th>Parameters</th>
-		 				<th>Description</th>
-		 			</tr>
-		 			<tr>
-		 				<td>/convertTimeFromEpoch</td>
-		 				<td>data</td>
-		 				<td>Convert Readable Time to Epoch Time</td>
-		 			</tr>
-		 			<tr>
-		 				<td>/convertTimeToEpoch</td>
-		 				<td>data</td>
-		 				<td>Convert Epoch Time to Readable Time</td>
-		 			</tr>
-		 			<tr>
-		 				<td>/validateJson</td>
-		 				<td>data, whiteListFilter, blackListFilter</td>
-		 				<td>Validate a JSON object. Optional filter parameters allow for white or black list filering of the response. The repsonse is also formatted.</td>
-		 			</tr>
-		 			<tr>
-		 				<td>/copareJson</td>
-		 				<td>jsonOne, jsonTwo</td>
-		 				<td>Compare two JSON objects. A JSON object containing only the differences is returned.</td>
-		 			</tr>
-		 			<tr>
-		 				<td>/base64Encode</td>
-		 				<td>data</td>
-		 				<td>Base 64 encode a string.</td>
-		 			</tr>
-		 			<tr>
-		 				<td>/base64Decode</td>
-		 				<td>data</td>
-		 				<td>Base 64 decode an encoded string.</td>
-		 			</tr>
-		 			<tr>
-		 				<td>/urlEncode</td>
-		 				<td>encode,decode</td>
-		 				<td>URL encode (or decode) a string based on the query parameter.</td>
-		 			</tr>
-		 			<tr>
-		 				<td>/md5Hash</td>
-		 				<td>data</td>
-		 				<td>Create an MD5 Hash of a string.</td>
-		 			</tr>
-		 			<tr>
-		 				<td>/sha1Hash</td>
-		 				<td>data</td>
-		 				<td>Create a SHA-1 Hash of a string.</td>
-		 			</tr>
-		 		</table>
-
+		 		<h1>What's a {{.Output}}??</h1>
 			</div> <!-- /jumbotron -->
 		</div> <!-- /container -->
+		<script type="text/javascript">
+			
+			function init() {
+
+			}
+
+		</script>
 		<!-- Bootstrap core JavaScript
     	================================================== -->
 	    <!-- Placed at the end of the document so the pages load faster -->
