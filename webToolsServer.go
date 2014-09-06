@@ -139,8 +139,10 @@ func validateJsonHandler(rw http.ResponseWriter, req *http.Request) {
 	InfoLog.Println("validateJsonHandler called")
 
 	input := retrieveParam(req, "data")
+	pretty, _ := strconv.ParseBool(req.FormValue("pretty"))
+	fmt.Println("Pretty is " + strconv.FormatBool(pretty))
 	var responseData = ResponseData{}
-	if (len(input) != 0) {
+	if len(input) != 0 {
 		var json []byte
 		var err error
 		whiteListFilter := req.FormValue("whiteListFilter")
@@ -148,13 +150,13 @@ func validateJsonHandler(rw http.ResponseWriter, req *http.Request) {
 		if (len(whiteListFilter) != 0 || len(blackListFilter) != 0) {
 			if (len(whiteListFilter) != 0) {
 				fields := strings.Split(whiteListFilter, ",")
-				json, err = myTools.JsonPositiveFilter([]byte(input), fields)
+				json, err = myTools.JsonPositiveFilter([]byte(input), fields, pretty)
 			} else {
 				fields := strings.Split(blackListFilter, ",")
-				json, err = myTools.JsonNegativeFilter([]byte(input), fields)
+				json, err = myTools.JsonNegativeFilter([]byte(input), fields, pretty)
 			}
 		} else {
-			json, err = myTools.ValidateJson([]byte(input))
+			json, err = myTools.ValidateJson([]byte(input), pretty)
 		}
 		if err != nil {
 			json = []byte(err.Error())
