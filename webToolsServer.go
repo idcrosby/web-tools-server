@@ -33,6 +33,7 @@ var timeHtml = "resources/html/webToolsTime.html"
 var contactHtml = "resources/html/webToolsContact.html"
 var apiHtml = "resources/html/webToolsAPI.html"
 var searchHtml = "resources/html/webToolsSearch.html"
+var proxyHtml = "resources/html/webToolsProxy.html"
 
 func main() {
 
@@ -57,6 +58,7 @@ func main() {
 	http.HandleFunc("/contact", errorHandler(contactHandler))
 	http.HandleFunc("/api", errorHandler(apiHandler))
 	http.HandleFunc("/search", errorHandler(searchHandler))
+	http.HandleFunc("/proxy", errorHandler(proxyHandler))
 
 	// Serve CSS/JS files
 	http.Handle("/resources/", http.StripPrefix("/resources/", http.FileServer(http.Dir("resources"))))
@@ -297,6 +299,14 @@ func searchHandler(rw http.ResponseWriter, req *http.Request) {
 	search := retrieveParam(req, "data")
 	responseData := ResponseData{Input: search, Output: search, Field: "Search", Valid: true}
 	t,_ := template.ParseFiles(searchHtml)
+	t.Execute(rw, responseData)
+}
+
+func proxyHandler(rw http.ResponseWriter, req *http.Request) {
+	InfoLog.Println("proxyhHandler called")
+	url := retrieveParam(req, "url")
+	responseData := ResponseData{Input: url, Output: url, Field: "Url", Valid: true}
+	t,_ := template.ParseFiles(proxyHtml)
 	t.Execute(rw, responseData)
 }
 

@@ -23,9 +23,9 @@ Filter is passed in as comma delimited fields. Sub fields indicated with dot '.'
 Convert between Unix Epoch Time and Human readable time.
 Current Unix Epoch time provided as real time clock.
 
-### Base64
+### Encoding
 
-Encode and decode in Base64.
+Encode and decode in Base64 or URL encoding.
 
 ### Hashing
 
