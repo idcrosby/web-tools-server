@@ -5,6 +5,7 @@ import (
 	"flag"
 	"fmt"
 	"github.com/idcrosby/web-tools"
+	"github.com/idcrosby/goProxyGo"
 	"log"
 	"net/http"
 	"net/http/httputil"
@@ -46,12 +47,12 @@ func main() {
 	ErrorLog = log.New(os.Stderr, "ERROR: ", log.Ldate|log.Ltime)
 
 	http.HandleFunc("/", errorHandler(defaultHandler))
-	http.HandleFunc("/base64Encode", errorHandler(base64EncodeHandler))
+	http.HandleFunc("/encoding", errorHandler(base64EncodeHandler))
 	http.HandleFunc("/base64Decode", errorHandler(base64DecodeHandler))
 	http.HandleFunc("/urlEncode", errorHandler(urlEncodeHandler))
 	http.HandleFunc("/validateJson", errorHandler(validateJsonHandler))
 	http.HandleFunc("/compareJson", errorHandler(compareJsonHandler))
-	http.HandleFunc("/md5Hash", errorHandler(md5HashHandler))
+	http.HandleFunc("/hashing", errorHandler(md5HashHandler))
 	http.HandleFunc("/sha1Hash", errorHandler(sha1HashHandler))
 	http.HandleFunc("/convertTimeToEpoch", errorHandler(convertTimeToEpochHandler))
 	http.HandleFunc("/convertTimeFromEpoch", errorHandler(convertTimeFromEpochHandler))
@@ -303,9 +304,15 @@ func searchHandler(rw http.ResponseWriter, req *http.Request) {
 }
 
 func proxyHandler(rw http.ResponseWriter, req *http.Request) {
-	InfoLog.Println("proxyhHandler called")
+	InfoLog.Println("proxyHandler called")
 	url := retrieveParam(req, "url")
-	responseData := ResponseData{Input: url, Output: url, Field: "Url", Valid: true}
+	var response string
+	if len(url) > 0 {
+		response = string(goProxy.GoGet(url))
+	} else {
+		response = "Error Getting " + url
+	}
+	responseData := ResponseData{Input: url, Output: response, Field: "ProxyDiv", Valid: true}
 	t,_ := template.ParseFiles(proxyHtml)
 	t.Execute(rw, responseData)
 }

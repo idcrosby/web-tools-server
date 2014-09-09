@@ -40,3 +40,5 @@ Create hash values in either MD5 or SHA-1 format.
 - Send feedback as email / store in DB
 - Handle Time Zone input
 - Implement search
+- Make Hash input bigger
+- Make time clock copyable
