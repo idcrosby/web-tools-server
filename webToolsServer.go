@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"github.com/idcrosby/web-tools"
 	"github.com/idcrosby/goProxyGo"
+	"io/ioutil"
 	"log"
 	"net/http"
 	"net/http/httputil"
@@ -52,8 +53,8 @@ func main() {
 	http.HandleFunc("/urlEncode", errorHandler(urlEncodeHandler))
 	http.HandleFunc("/validateJson", errorHandler(validateJsonHandler))
 	http.HandleFunc("/compareJson", errorHandler(compareJsonHandler))
-	http.HandleFunc("/hashing", errorHandler(md5HashHandler))
-	http.HandleFunc("/sha1Hash", errorHandler(sha1HashHandler))
+	http.HandleFunc("/hashing", errorHandler(hashingHandler))
+	// http.HandleFunc("/sha1Hash", errorHandler(sha1HashHandler))
 	http.HandleFunc("/convertTimeToEpoch", errorHandler(convertTimeToEpochHandler))
 	http.HandleFunc("/convertTimeFromEpoch", errorHandler(convertTimeFromEpochHandler))
 	http.HandleFunc("/contact", errorHandler(contactHandler))
@@ -80,7 +81,7 @@ func defaultHandler(rw http.ResponseWriter, req *http.Request) {
 	webToolsTemplate.Execute(rw, responseData)
 }
 
-// TODO Merge these handlers?
+// TODO Merge these handlers
 func base64EncodeHandler(rw http.ResponseWriter, req *http.Request) {
 	InfoLog.Println("base64EncodeHandler called")
 	encode := retrieveParam(req, "data")
@@ -143,7 +144,6 @@ func validateJsonHandler(rw http.ResponseWriter, req *http.Request) {
 
 	input := retrieveParam(req, "data")
 	pretty, _ := strconv.ParseBool(req.FormValue("pretty"))
-	fmt.Println("Pretty is " + strconv.FormatBool(pretty))
 	var responseData = ResponseData{}
 	if len(input) != 0 {
 		var json []byte
@@ -191,26 +191,21 @@ func compareJsonHandler(rw http.ResponseWriter, req *http.Request) {
 	resultTemplate.Execute(rw, responseData)
 }
 
-func md5HashHandler(rw http.ResponseWriter, req *http.Request) {
-	InfoLog.Println("md5HashHandler called")
+func hashingHandler(rw http.ResponseWriter, req *http.Request) {
+	InfoLog.Println("hashingHandler called")
 	input := retrieveParam(req, "data")
+	hashType := req.FormValue("hashType")
 	var responseData = ResponseData{}
-	if (len(input) != 0) {
-		hash := myTools.Md5Hash([]byte(input))
-		responseData = ResponseData{Input: input, Output: hash, Field: "Md5HashDiv", Valid: true}
-	}
-	var resultTemplate, err = template.ParseFiles(hashingHtml)
-	check(err)
-	resultTemplate.Execute(rw, responseData)
-}
-
-func sha1HashHandler(rw http.ResponseWriter, req *http.Request) {
-	InfoLog.Println("sha1HashHandler called")
-	input := retrieveParam(req, "data")
-	var responseData = ResponseData{}
-	if (len(input) != 0) {
-		hash := myTools.Sha1Hash([]byte(input))
-		responseData = ResponseData{Input: input, Output: hash, Field: "Sha1HashDiv", Valid: true}
+	if len(input) != 0 {
+		var hash string
+		if hashType == "Md5" {
+			hash = myTools.Md5Hash([]byte(input))
+		} else if hashType == "Sha1" {
+			hash = myTools.Sha1Hash([]byte(input))
+		} else {
+			hash = "Error: Unknown hashing type."
+		}
+		responseData = ResponseData{Input: input, Output: hash, Field: hashType + "HashDiv", Valid: true}
 	}
 	var resultTemplate, err = template.ParseFiles(hashingHtml)
 	check(err)
@@ -305,14 +300,40 @@ func searchHandler(rw http.ResponseWriter, req *http.Request) {
 
 func proxyHandler(rw http.ResponseWriter, req *http.Request) {
 	InfoLog.Println("proxyHandler called")
-	url := retrieveParam(req, "url")
-	var response string
-	if len(url) > 0 {
-		response = string(goProxy.GoGet(url))
-	} else {
-		response = "Error Getting " + url
+	var responseData = ResponseData{}
+	urlString := req.FormValue("url")
+	method := req.FormValue("method")
+	body := req.FormValue("body")
+
+	err := req.ParseForm()
+	check(err)
+
+	// TODO check values
+
+	var responseString string
+	if len(urlString) > 0 {
+		thisUrl, err := url.Parse(urlString)
+		check(err)
+		var headers map[string][]string
+		headers = make(map[string][]string)
+		for name, values := range req.Form {
+			if subs := strings.Split(name, "headerName"); len(subs) > 1 {
+				headers[values[0]] = req.Form["headerValue" + subs[1]]
+			}	
+		}
+		request := goProxy.BuildRequest(thisUrl, method, []byte(body), headers)
+		// TODO save or log request?
+		response, err := goProxy.ExecuteRequest(request)
+		// response, err := goProxy.GoGet(url)
+		if err == nil {
+			body, _ := ioutil.ReadAll(response.Body)
+			responseString = string(body)
+		} else {
+			responseString = "Error Getting " + urlString
+		}
+		responseData = ResponseData{Input: urlString, Output: responseString, Field: "ProxyDiv", Valid: true}
 	}
-	responseData := ResponseData{Input: url, Output: response, Field: "ProxyDiv", Valid: true}
+	
 	t,_ := template.ParseFiles(proxyHtml)
 	t.Execute(rw, responseData)
 }

@@ -94,8 +94,8 @@
 		 			</tr>
 		 			<tr>
 		 				<td>/validateJson</td>
-		 				<td>data, whiteListFilter, blackListFilter</td>
-		 				<td>Validate a JSON object. Optional filter parameters allow for white or black list filering of the response. The repsonse is also formatted.</td>
+		 				<td>data, pretty, whiteListFilter, blackListFilter</td>
+		 				<td>Validate a JSON object. Optional filter parameters allow for white or black list filering of the response. The repsonse is also formatted if pretty is set to true. NB: If both fitlers are present whitelist filter only will be applied</td>
 		 			</tr>
 		 			<tr>
 		 				<td>/copareJson</td>
@@ -118,14 +118,9 @@
 		 				<td>URL encode (or decode) a string based on the query parameter.</td>
 		 			</tr>
 		 			<tr>
-		 				<td>/md5Hash</td>
-		 				<td>data</td>
-		 				<td>Create an MD5 Hash of a string.</td>
-		 			</tr>
-		 			<tr>
-		 				<td>/sha1Hash</td>
-		 				<td>data</td>
-		 				<td>Create a SHA-1 Hash of a string.</td>
+		 				<td>/hashing</td>
+		 				<td>data, hashType</td>
+		 				<td>Create an MD5 or SHA-1 (based on the hashType param) Hash of a string.</td>
 		 			</tr>
 		 		</table>
 

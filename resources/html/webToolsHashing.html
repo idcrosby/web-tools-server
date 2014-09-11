@@ -80,12 +80,13 @@
 						<h3 class="panel-title">Md5 Hashing</h3>
 					</div>
 					<div class="panel-body" method="get">
-						<form class="form-inline" role="form" action="/md5Hash">
-							<div class="form-group">
-								<label for="md5Input">Value to Hash</label>
-								<input type="text" class="form-control" id="md5Input" placeholder="input" name="data">
+						<form class="form-horizontal" role="form" action="/hashing">
+							<input type="hidden" name="hashType" value="Md5">
+							<div class="form-group row">
+								<label for="md5Input" class="col-lg-4">Value to Hash</label>
+								<input type="text" class="form-control col-lg-3" id="md5Input" placeholder="input" name="data">
+								<button type="submit" class="btn btn-default col-lg-2">Hash</button>
 							</div>
-							<button type="submit" class="btn btn-default">Hash</button>
 						</form>
 						<textarea class="form-control" name="ResultArea" disabled rows="1" cols="50">{{.Output}}</textarea>
 					</div>
@@ -96,7 +97,8 @@
 						<h3 class="panel-title">SHA-1 Hashing</h3>
 					</div>
 					<div class="panel-body" method="get">
-						<form class="form-inline" role="form" action="/sha1Hash">
+						<form class="form-inline" role="form" action="/hashing">
+							<input type="hidden" name="hashType" value="Sha1">
 							<div class="form-group">
 								<label for="sha1Input">Value to Hash</label>
 								<input type="text" class="form-control" id="sha1Input" placeholder="input" name="data">

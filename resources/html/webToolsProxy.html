@@ -80,10 +80,43 @@
 						<h3 class="panel-title">Proxy</h3>
 					</div>
 					<div class="panel-body" method="get">
-						<form class="form-inline" role="form" action="/proxy">
+						<form class="form" role="form" action="/proxy">
 							<div class="form-group">
 								<label for="urlInput">URL</label>
 								<input type="text" class="form-control" id="urlInput" placeholder="url" name="url">
+							</div>
+							<div class="form-group" id="headers">
+								<input id="nameInput" type="button" value="Add Header" onclick="addHeader()"/>
+								<input id="valueInput" type="button" value="Remove Header" onclick="removeHeader()"/>
+								<table id="headerTable">
+									<tr>
+										<td><input type="text" name="headerName" placeholder="name"/></td>
+										<td><input type="text" name="headerValue" placeholder="value"/></td>
+									</tr>
+								</table>
+							</div>
+							<div class="radio">
+								<label class="radio-inline">
+									<input type="radio" name="method" id="getRadio" value="get" checked> GET
+								</label>
+								<label class="radio-inline">
+									<input type="radio" name="method" id="putRadio" value="put"> PUT
+								</label>
+								<label class="radio-inline">
+									<input type="radio" name="method" id="postRadio" value="post"> POST
+								</label>
+								<label class="radio-inline">
+									<input type="radio" name="method" id="deleteRadio" value="delete"> DELETE
+								</label>
+								<label class="radio-inline">
+									<input type="radio" name="method" id="headRadio" value="head"> HEAD
+								</label>
+								<label class="radio-inline">
+									<input type="radio" name="method" id="patchRadio" value="patch"> PATCH
+								</label>
+								<label class="radio-inline">
+									<input type="radio" name="method" id="optionsRadio" value="patch"> OPTIONS
+								</label>
 							</div>
 							<button type="submit" class="btn btn-default">Go!</button>
 						</form>
@@ -115,6 +148,45 @@
 				for (var i = 0, j = textAreas.length; i < j; i++) {
 					if (textAreas[i].name.indexOf("Result") > -1)
 						textAreas[i].style.visibility="hidden";
+				}
+			}
+
+			function addHeader() {
+				var table = document.getElementById("headerTable");
+				var rowCount = table.rows.length;
+				var row = table.insertRow(rowCount);
+
+				var nameCell = row.insertCell(0);
+				var el1 = document.createElement("input");
+				el1.type = "text";
+				el1.name = "headerName" + rowCount;
+				el1.placeholder = "name";
+				nameCell.appendChild(el1);
+
+				var valueCell = row.insertCell(1);
+				var el2 = document.createElement("input");
+				el2.type = "text";
+				el2.name = "headerValue" + rowCount;
+				el2.placeholder = "value";
+				valueCell.appendChild(el2);
+
+				document.getElementById("valueInput").style.visibility="visible";
+			}
+
+			function removeHeader() {
+				try {
+					var table = document.getElementById("headerTable");
+					var rowCount = table.rows.length;
+
+					if (rowCount > 0) {
+						table.deleteRow(rowCount-1);
+						if (rowCount == 1) {
+							// We just removed the last row
+							document.getElementById("valueInput").style.visibility="hidden";
+						}
+					}
+				} catch(e) {
+					alert(e);
 				}
 			}
 

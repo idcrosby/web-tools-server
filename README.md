@@ -42,3 +42,7 @@ Create hash values in either MD5 or SHA-1 format.
 - Implement search
 - Make Hash input bigger
 - Make time clock copyable
+- Enhance Proxy
+	- add headers
+	- authentication
+	- filtering
