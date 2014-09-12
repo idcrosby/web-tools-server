@@ -72,55 +72,72 @@
 			  </div><!-- /.container-fluid -->
 			</div>
 
-
 		 	<div class="jumbotron">
-
 				<div class="panel panel-primary" id="ProxyDiv">
 					<div class="panel-heading">
-						<h3 class="panel-title">Proxy</h3>
+						<h3 class="panel-title">CURLing</h3>
 					</div>
 					<div class="panel-body" method="get">
 						<form class="form" role="form" action="/proxy">
 							<div class="form-group">
 								<label for="urlInput">URL</label>
-								<input type="text" class="form-control" id="urlInput" placeholder="url" name="url">
+								<input type="text" class="form-control" id="urlInput" placeholder="url" name="url" value="{{.InUrl}}">
 							</div>
-							<div class="form-group" id="headers">
-								<input id="nameInput" type="button" value="Add Header" onclick="addHeader()"/>
-								<input id="valueInput" type="button" value="Remove Header" onclick="removeHeader()"/>
-								<table id="headerTable">
-									<tr>
-										<td><input type="text" name="headerName" placeholder="name"/></td>
-										<td><input type="text" name="headerValue" placeholder="value"/></td>
+							<div class="form-group" >
+								<label for="headerTable">Headers</label>
+								<button name="add" type="button" class="btn btn-default btn-sm" onclick="addHeader()">
+											<span class="glyphicon glyphicon-plus"></span>
+								</button>
+							</div>
+							<div class="form-group">
+								<table class="table table-striped" id="headerTable">
+									<tr id="row0">
+										<td class="col-md-3"><input class="form-control" type="text" name="headerName" placeholder="name"/></td>
+										<td class="col-md-12"><input class="form-control" type="text" name="headerValue" placeholder="value"/></td>
+										<td class="col-md-1"><button name="row0" type="button" class="btn btn-default" onclick="removeHeader(this)">
+											<span class="glyphicon glyphicon-remove"></span>
+										</button></td>
 									</tr>
 								</table>
 							</div>
-							<div class="radio">
+
+							<div id="methodRadio" class="radio">
 								<label class="radio-inline">
-									<input type="radio" name="method" id="getRadio" value="get" checked> GET
+									<input type="radio" name="method" id="getRadio" value="get" onclick="methodSelect()" checked> GET
 								</label>
 								<label class="radio-inline">
-									<input type="radio" name="method" id="putRadio" value="put"> PUT
+									<input type="radio" name="method" id="putRadio" value="put" onclick="methodSelect()"> PUT
 								</label>
 								<label class="radio-inline">
-									<input type="radio" name="method" id="postRadio" value="post"> POST
+									<input type="radio" name="method" id="postRadio" value="post" onclick="methodSelect()"> POST
 								</label>
 								<label class="radio-inline">
-									<input type="radio" name="method" id="deleteRadio" value="delete"> DELETE
+									<input type="radio" name="method" id="deleteRadio" value="delete" onclick="methodSelect()"> DELETE
 								</label>
 								<label class="radio-inline">
-									<input type="radio" name="method" id="headRadio" value="head"> HEAD
+									<input type="radio" name="method" id="headRadio" value="head" onclick="methodSelect()"> HEAD
 								</label>
 								<label class="radio-inline">
-									<input type="radio" name="method" id="patchRadio" value="patch"> PATCH
+									<input type="radio" name="method" id="patchRadio" value="patch" onclick="methodSelect()"> PATCH
 								</label>
 								<label class="radio-inline">
-									<input type="radio" name="method" id="optionsRadio" value="patch"> OPTIONS
+									<input type="radio" name="method" id="optionsRadio" value="patch" onclick="methodSelect()"> OPTIONS
 								</label>
 							</div>
-							<button type="submit" class="btn btn-default">Go!</button>
+							<div class="form-group">
+								<textarea id="bodyArea" class="form-control" name="reqBody" disabled rows="5" cols="50">{{.InBody}}</textarea>
+							</div>
+							<button type="submit" class="btn btn-primary btn-block">Go!</button>
 						</form>
-						<textarea class="form-control" name="ResultArea" disabled rows="1" cols="50">{{.Output}}</textarea>
+						<div id="responseDiv">
+							<h4>Response:</h4>
+							<label for="responseStatus">Status</label>
+							<span id="responseStatus">{{.Status}}</span><br>
+							<label for="responseHeaders">Headers</label>
+							<textarea id="responseHeaders" class="form-control" disabled rows="1" cols="50">{{.OutHeaders}}</textarea>
+							<label for="responseText">Body</label>
+							<textarea id="responseText" class="form-control" name="ResultArea" disabled rows="1" cols="50">{{.OutBody}}</textarea>
+						</div>
 					</div>
 				</div>
 
@@ -129,21 +146,32 @@
 		<script type="text/javascript">
 			
 			function init() {
-				hideAllResultAreas();
+				// hideAllResultAreas();
 
 				if ({{.Valid}}) {
-					console.log("valid response for {{.Field}}")
+					document.getElementById("responseDiv").style.visibility="visible";
+					var responseArea = document.getElementById("responseText");
+					var responseHeaders = document.getElementById("responseHeaders");
+					responseArea.style.visibility="visible";
+					responseArea.rows = 5;
+					responseHeaders.style.visibility="visible";
+					responseHeaders.rows = 5;
 
-					var div = document.getElementById("{{.Field}}");
-					var textAreas = div.getElementsByTagName('textarea');
-					textAreas[0].style.visibility="visible";
-					var inputs = div.getElementsByTagName('input');
-					inputs[0].value="{{.Input}}";
+					var statusEl = document.getElementById("responseStatus");
+					var status = parseInt({{.Status}}.substring(0, 3));
+					if (status > 199 && status < 300) {
+						statusEl.className = "label label-success"
+					} else if (status > 499) {
+						statusEl.className = "label label-danger"
+					} else {
+						statusEl.className = "label label-warning"
+					}
+				} else {
+					document.getElementById("responseDiv").style.visibility="hidden";
 				}
 			}
 
 			function hideAllResultAreas() {
-				console.log("hiding all...")
 				var textAreas = document.getElementsByTagName('textarea');
 				for (var i = 0, j = textAreas.length; i < j; i++) {
 					if (textAreas[i].name.indexOf("Result") > -1)
@@ -155,38 +183,61 @@
 				var table = document.getElementById("headerTable");
 				var rowCount = table.rows.length;
 				var row = table.insertRow(rowCount);
+				row.id = "row" + rowCount;
 
 				var nameCell = row.insertCell(0);
+				nameCell.className = "col-md-3"
 				var el1 = document.createElement("input");
 				el1.type = "text";
 				el1.name = "headerName" + rowCount;
+				el1.className = "form-control";
 				el1.placeholder = "name";
 				nameCell.appendChild(el1);
 
 				var valueCell = row.insertCell(1);
+				valueCell.className = "col-md-12"
 				var el2 = document.createElement("input");
 				el2.type = "text";
 				el2.name = "headerValue" + rowCount;
+				el2.className = "form-control";
 				el2.placeholder = "value";
 				valueCell.appendChild(el2);
 
-				document.getElementById("valueInput").style.visibility="visible";
+				var removeCell = row.insertCell(2);
+				removeCell.className = "col-md-1"
+				var el3 = document.createElement("button");
+				el3.type = "button";
+				el3.className="btn btn-default"
+				el3.setAttribute('onclick', 'removeHeader(this)');
+				var btnSpan = document.createElement("span");
+				btnSpan.className = "glyphicon glyphicon-remove";
+				el3.appendChild(btnSpan);
+				removeCell.appendChild(el3);
 			}
 
-			function removeHeader() {
+			function removeHeader(el) {
 				try {
+					var rowId = el.parentNode.parentNode.id;
 					var table = document.getElementById("headerTable");
-					var rowCount = table.rows.length;
-
-					if (rowCount > 0) {
-						table.deleteRow(rowCount-1);
-						if (rowCount == 1) {
-							// We just removed the last row
-							document.getElementById("valueInput").style.visibility="hidden";
+					for (var i = 0, row; row = table.rows[i]; i++) {
+						if (row.id === rowId) {
+							table.deleteRow(i);
+							break;
 						}
 					}
 				} catch(e) {
 					alert(e);
+				}
+			}
+
+			function methodSelect() {
+				var method = $('input[name=method]:checked', '#methodRadio').val(); 
+				var bodyEl = document.getElementById("bodyArea");
+				if (method === "put" || method === "post") {
+					bodyEl.disabled=false;
+				} else {
+
+					bodyEl.disabled=true;
 				}
 			}
 

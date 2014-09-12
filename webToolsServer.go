@@ -300,17 +300,15 @@ func searchHandler(rw http.ResponseWriter, req *http.Request) {
 
 func proxyHandler(rw http.ResponseWriter, req *http.Request) {
 	InfoLog.Println("proxyHandler called")
-	var responseData = ResponseData{}
+	var responseData = ProxyResponse{}
 	urlString := req.FormValue("url")
 	method := req.FormValue("method")
-	body := req.FormValue("body")
+	reqBody := req.FormValue("reqBody")
 
 	err := req.ParseForm()
 	check(err)
 
 	// TODO check values
-
-	var responseString string
 	if len(urlString) > 0 {
 		thisUrl, err := url.Parse(urlString)
 		check(err)
@@ -321,17 +319,22 @@ func proxyHandler(rw http.ResponseWriter, req *http.Request) {
 				headers[values[0]] = req.Form["headerValue" + subs[1]]
 			}	
 		}
-		request := goProxy.BuildRequest(thisUrl, method, []byte(body), headers)
+		request := goProxy.BuildRequest(thisUrl, method, []byte(reqBody), headers)
 		// TODO save or log request?
+		var responseString string
+		var respHeaders string
+		var status string
 		response, err := goProxy.ExecuteRequest(request)
-		// response, err := goProxy.GoGet(url)
 		if err == nil {
 			body, _ := ioutil.ReadAll(response.Body)
+			respHeaders = headersToString(response.Header)
 			responseString = string(body)
+			status = response.Status
 		} else {
 			responseString = "Error Getting " + urlString
+			status = "500"
 		}
-		responseData = ResponseData{Input: urlString, Output: responseString, Field: "ProxyDiv", Valid: true}
+		responseData = ProxyResponse{InUrl: urlString, InBody: reqBody, Status: status, OutBody: responseString, OutHeaders: respHeaders, Valid: true}
 	}
 	
 	t,_ := template.ParseFiles(proxyHtml)
@@ -384,7 +387,25 @@ func requestAsString(request *http.Request) []byte {
 	return buffer.Bytes()
 }
 
+func headersToString(headers map[string][]string) string {
+	var buffer bytes.Buffer
+	for name, values := range headers {
+		buffer.WriteString(name + ": ")
+		for _, val := range values {
+			buffer.WriteString(val)
+		}
+		buffer.WriteString("\n")
+	}
+
+	return string(buffer.Bytes())
+}
+
 type ResponseData struct {
 	Input, Output, Field string
 	Valid bool
+}
+
+type ProxyResponse struct {
+	InUrl, InBody, Status, OutBody, OutHeaders string
+	Valid bool  
 }

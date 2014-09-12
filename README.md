@@ -43,6 +43,8 @@ Create hash values in either MD5 or SHA-1 format.
 - Make Hash input bigger
 - Make time clock copyable
 - Enhance Proxy
-	- add headers
 	- authentication
 	- filtering
+	- make pretty
+	- sort headers consistently
+	- construct URL, popup?
