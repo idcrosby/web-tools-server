@@ -48,3 +48,4 @@ Create hash values in either MD5 or SHA-1 format.
 	- make pretty
 	- sort headers consistently
 	- construct URL, popup?
+	- store calls

@@ -316,7 +316,9 @@ func proxyHandler(rw http.ResponseWriter, req *http.Request) {
 		headers = make(map[string][]string)
 		for name, values := range req.Form {
 			if subs := strings.Split(name, "headerName"); len(subs) > 1 {
-				headers[values[0]] = req.Form["headerValue" + subs[1]]
+				if len(values[0]) > 0 {
+					headers[values[0]] = req.Form["headerValue" + subs[1]]
+				}
 			}	
 		}
 		request := goProxy.BuildRequest(thisUrl, method, []byte(reqBody), headers)
