@@ -40,12 +40,13 @@ Create hash values in either MD5 or SHA-1 format.
 - Send feedback as email / store in DB
 - Handle Time Zone input
 - Implement search
-- Make Hash input bigger
-- Make time clock copyable
 - Enhance Proxy
 	- authentication
 	- filtering
 	- make pretty
-	- sort headers consistently
 	- construct URL, popup?
 	- store calls
+	- split/make multiple calls
+	- save request headers
+	- format body based on content-type header (raw/formatted option)
+	- save state?

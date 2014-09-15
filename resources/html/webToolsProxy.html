@@ -62,9 +62,6 @@
 			          <ul class="dropdown-menu" role="menu">
 			            <li><a href="/api">API</a></li>
 			            <li class="active"><a href="/proxy">Proxy</a></li>
-			            <li><a href="#">Something else here</a></li>
-			            <li class="divider"></li>
-			            <li><a href="#">Separated link</a></li>
 			          </ul>
 			        </li>
 			      </ul>
@@ -131,8 +128,7 @@
 						</form>
 						<div id="responseDiv">
 							<h4>Response:</h4>
-							<label for="responseStatus">Status</label>
-							<span id="responseStatus">{{.Status}}</span><br>
+							<h3><span id="responseStatus">{{.Status}}</span></h3>
 							<label for="responseHeaders">Headers</label>
 							<textarea id="responseHeaders" class="form-control" disabled rows="1" cols="50">{{.OutHeaders}}</textarea>
 							<label for="responseText">Body</label>
@@ -233,7 +229,7 @@
 			function methodSelect() {
 				var method = $('input[name=method]:checked', '#methodRadio').val(); 
 				var bodyEl = document.getElementById("bodyArea");
-				if (method === "put" || method === "post") {
+				if (method === "PUT" || method === "POST") {
 					bodyEl.disabled=false;
 				} else {
 

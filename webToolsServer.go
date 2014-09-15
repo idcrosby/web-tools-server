@@ -12,6 +12,7 @@ import (
 	"net/http/httputil"
 	"net/url"
 	"os"
+	"sort"
 	"strconv"
 	"strings"
 	"html/template"
@@ -389,12 +390,24 @@ func requestAsString(request *http.Request) []byte {
 	return buffer.Bytes()
 }
 
+// Returns a string containing each header on a new line
+//   sorted alphabetically
 func headersToString(headers map[string][]string) string {
 	var buffer bytes.Buffer
-	for name, values := range headers {
-		buffer.WriteString(name + ": ")
-		for _, val := range values {
-			buffer.WriteString(val)
+	var keys []string
+	for k := range headers {
+		keys = append(keys, k)
+	}
+	sort.Strings(keys)
+	for _, k := range keys {
+		buffer.WriteString(k + ": ")
+		values := headers[k]
+		for i, val := range values {
+			if i == len(values) + 1 {
+				buffer.WriteString(val)
+			} else {
+				buffer.WriteString(val + ", ")
+			}
 		}
 		buffer.WriteString("\n")
 	}
