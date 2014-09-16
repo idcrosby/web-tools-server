@@ -1,11 +1,13 @@
 package main
 
 import (
+	"bufio"
 	"bytes"
 	"flag"
 	"fmt"
 	"github.com/idcrosby/web-tools"
 	"github.com/idcrosby/goProxyGo"
+	"io"
 	"io/ioutil"
 	"log"
 	"net/http"
@@ -40,13 +42,28 @@ var proxyHtml = "resources/html/webToolsProxy.html"
 
 func main() {
 
+	var logFileName string
+	var writer io.Writer
+
 	// Define flags
 	flag.BoolVar(&Verbose, "verbose", false, "Turn on verbose logging.")
+	flag.StringVar(&logFileName, "logFile", "", "Verbose log to file.")
 	flag.Parse()
 
 	// init loggers
-	InfoLog = log.New(os.Stdout, "INFO: ", log.Ldate|log.Ltime)
-	ErrorLog = log.New(os.Stderr, "ERROR: ", log.Ldate|log.Ltime)
+	writer = os.Stdout
+	if len(logFileName) > 0 {
+		logFile, err := os.OpenFile(logFileName, os.O_CREATE|os.O_WRONLY|os.O_APPEND, 0666)
+		if err != nil {
+			fmt.Printf("Error opening log file: ", err)
+		} else {
+			defer logFile.Close()
+			writer = bufio.NewWriter(logFile)
+		}
+	}
+
+	InfoLog = log.New(writer, "INFO: ", log.LstdFlags)
+	ErrorLog = log.New(writer, "ERROR: ", log.LstdFlags)
 
 	http.HandleFunc("/", errorHandler(defaultHandler))
 	http.HandleFunc("/encoding", errorHandler(base64EncodeHandler))
@@ -55,7 +72,6 @@ func main() {
 	http.HandleFunc("/validateJson", errorHandler(validateJsonHandler))
 	http.HandleFunc("/compareJson", errorHandler(compareJsonHandler))
 	http.HandleFunc("/hashing", errorHandler(hashingHandler))
-	// http.HandleFunc("/sha1Hash", errorHandler(sha1HashHandler))
 	http.HandleFunc("/convertTimeToEpoch", errorHandler(convertTimeToEpochHandler))
 	http.HandleFunc("/convertTimeFromEpoch", errorHandler(convertTimeFromEpochHandler))
 	http.HandleFunc("/contact", errorHandler(contactHandler))
@@ -323,11 +339,16 @@ func proxyHandler(rw http.ResponseWriter, req *http.Request) {
 			}	
 		}
 		request := goProxy.BuildRequest(thisUrl, method, []byte(reqBody), headers)
-		// TODO save or log request?
+		if Verbose {
+			InfoLog.Println(request)
+		}
 		var responseString string
 		var respHeaders string
 		var status string
 		response, err := goProxy.ExecuteRequest(request)
+		if Verbose {
+			InfoLog.Println(response)
+		}
 		if err == nil {
 			body, _ := ioutil.ReadAll(response.Body)
 			respHeaders = headersToString(response.Header)
