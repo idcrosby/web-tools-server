@@ -79,7 +79,41 @@
 							<div class="form-group">
 								<label for="urlInput">URL</label>
 								<input type="text" class="form-control" id="urlInput" placeholder="url" name="url" value="{{.InUrl}}">
+								<br>
+								<button type="button" class="btn" data-toggle="collapse" data-target="#urlBuilder">
+									Build URL
+								</button>
 							</div>
+								<div id="urlBuilder" class="collapse">
+									<div class="form-inline" role="form">
+										<div class="form-group">
+											<label class="sr-only" for="protocolInput">Protocol</label>
+											<input type="text" class="form-control" id="protocolInput" placeholder="protocol">
+										<!-- </div> -->
+										<!-- <div class="form-group"> -->
+										    <div class="input-group">
+										    	<div class="input-group-addon">://</div>
+										     	<input class="form-control" id="hostInput" type="text" placeholder="host">
+										    </div>
+										<!-- </div> -->
+										<!-- <div class="form-group"> -->
+											<div class="input-group">
+											<div class="input-group-addon">/</div>
+										    <label class="sr-only" for="pathInput">Path</label>
+										    <input type="text" class="form-control" id="pathInput" placeholder="Path">
+											</div>
+										<!-- </div> -->
+										<!-- <div class="form-group"> -->
+											<div class="input-group">
+											<div class="input-group-addon">?</div>
+										    <label class="sr-only" for="queryInput">Query</label>
+										    <input type="text" class="form-control" id="queryInput" placeholder="Query Params">
+											</div>
+										</div>
+									</div>
+								</div>
+								<br>
+<!-- 							</div> -->
 							<div class="form-group" >
 								<label for="headerTable">Headers</label>
 								<button name="add" type="button" class="btn btn-default btn-sm" onclick="addHeader()">
@@ -165,6 +199,36 @@
 				} else {
 					document.getElementById("responseDiv").style.visibility="hidden";
 				}
+
+				$('#urlInput').bind('keyup', function() {
+					// Split URL
+					var url = document.createElement('a');
+					url.href = $(this).val();
+					$('#protocolInput').val(url.protocol.slice(0, url.protocol.length-1));
+					$('#hostInput').val(url.hostname);
+					$('#pathInput').val(url.pathname.slice(1, url.pathname.length));
+					$('#queryInput').val(url.search.slice(1, url.search.length));
+				});
+
+				$('#protocolInput').bind('keyup', function() {
+					$('#urlInput').val(buildUrl());
+				});
+
+				$('#hostInput').bind('keyup', function() {
+					$('#urlInput').val(buildUrl());
+				});
+
+				$('#pathInput').bind('keyup', function() {
+					$('#urlInput').val(buildUrl());
+				});
+
+				$('#queryInput').bind('keyup', function() {
+					$('#urlInput').val(buildUrl());
+				});
+			}
+
+			function buildUrl() {
+				return $('#protocolInput').val() + "://" + $('#hostInput').val() + "/" + $('#pathInput').val() + "?" + $('#queryInput').val();
 			}
 
 			function hideAllResultAreas() {
