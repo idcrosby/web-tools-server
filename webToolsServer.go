@@ -345,12 +345,16 @@ func proxyHandler(rw http.ResponseWriter, req *http.Request) {
 		var responseString string
 		var respHeaders string
 		var status string
+		var requestHeaders string
 		response, err := goProxy.ExecuteRequest(request)
 		if Verbose {
 			InfoLog.Println(response)
 		}
 		if err == nil {
 			body, _ := ioutil.ReadAll(response.Body)
+			reqDump, _ := httputil.DumpRequestOut(request, false)
+			// Strip out top line to get only headers
+			requestHeaders = strings.SplitN(string(reqDump),"\n",2)[1]
 			respHeaders = headersToString(response.Header)
 			responseString = string(body)
 			status = response.Status
@@ -358,7 +362,8 @@ func proxyHandler(rw http.ResponseWriter, req *http.Request) {
 			responseString = "Error Getting " + urlString
 			status = "500"
 		}
-		responseData = ProxyResponse{InUrl: urlString, InBody: reqBody, Status: status, OutBody: responseString, OutHeaders: respHeaders, Valid: true}
+		responseData = ProxyResponse{InUrl: urlString, InBody: reqBody, Status: status, 
+			OutBody: responseString, OutHeaders: respHeaders, InHeaders: requestHeaders,Valid: true}
 	}
 	
 	t,_ := template.ParseFiles(proxyHtml)
@@ -442,6 +447,6 @@ type ResponseData struct {
 }
 
 type ProxyResponse struct {
-	InUrl, InBody, Status, OutBody, OutHeaders string
+	InUrl, InBody, Status, OutBody, OutHeaders, InHeaders string
 	Valid bool  
 }

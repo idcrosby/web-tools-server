@@ -160,10 +160,11 @@
 							</div>
 							<button type="submit" class="btn btn-primary btn-block">Go!</button>
 						</form>
-						<div id="responseDiv">
-							<h4>Response:</h4>
+						<div id="responseDiv" class="collapse">
 							<h3><span id="responseStatus">{{.Status}}</span></h3>
-							<label for="responseHeaders">Headers</label>
+							<label for="requestHeaders">Request Headers</label>
+							<textarea id="requestHeaders" class="form-control" disabled rows="1" cols="50">{{.InHeaders}}</textarea>
+							<label for="responseHeaders">Response Headers</label>
 							<textarea id="responseHeaders" class="form-control" disabled rows="1" cols="50">{{.OutHeaders}}</textarea>
 							<label for="responseText">Body</label>
 							<textarea id="responseText" class="form-control" name="ResultArea" disabled rows="1" cols="50">{{.OutBody}}</textarea>
@@ -179,13 +180,10 @@
 				// hideAllResultAreas();
 
 				if ({{.Valid}}) {
-					document.getElementById("responseDiv").style.visibility="visible";
+					$('#responseDiv').collapse('show');
+
 					var responseArea = document.getElementById("responseText");
 					var responseHeaders = document.getElementById("responseHeaders");
-					responseArea.style.visibility="visible";
-					responseArea.rows = 5;
-					responseHeaders.style.visibility="visible";
-					responseHeaders.rows = 5;
 
 					var statusEl = document.getElementById("responseStatus");
 					var status = parseInt({{.Status}}.substring(0, 3));
@@ -196,33 +194,45 @@
 					} else {
 						statusEl.className = "label label-warning"
 					}
-				} else {
-					document.getElementById("responseDiv").style.visibility="hidden";
+
+					// Adjust Text Area sizes.
+					var lines = $('#responseHeaders').val().split("\n");
+					$('#responseHeaders').attr('rows', lines.length + 1);
+
+					lines = $('#responseText').val().split("\n");
+					$('#responseText').attr('rows', lines.length + 1);
+					lines = $('#requestHeaders').val().split("\n");
+					// Not sure why this seems to have extra line breaks
+					$('#requestHeaders').attr('rows', lines.length - 1);
 				}
 
-				$('#urlInput').bind('keyup', function() {
+				$('#urlInput').bind('keyup change', function() {
 					// Split URL
 					var url = document.createElement('a');
 					url.href = $(this).val();
 					$('#protocolInput').val(url.protocol.slice(0, url.protocol.length-1));
-					$('#hostInput').val(url.hostname);
+					if (url.port) {
+						$('#hostInput').val(url.hostname + ":" + url.port);
+					} else {
+						$('#hostInput').val(url.hostname);						
+					}
 					$('#pathInput').val(url.pathname.slice(1, url.pathname.length));
 					$('#queryInput').val(url.search.slice(1, url.search.length));
 				});
 
-				$('#protocolInput').bind('keyup', function() {
+				$('#protocolInput').bind('keyup change', function() {
 					$('#urlInput').val(buildUrl());
 				});
 
-				$('#hostInput').bind('keyup', function() {
+				$('#hostInput').bind('keyup change', function() {
 					$('#urlInput').val(buildUrl());
 				});
 
-				$('#pathInput').bind('keyup', function() {
+				$('#pathInput').bind('keyup change', function() {
 					$('#urlInput').val(buildUrl());
 				});
 
-				$('#queryInput').bind('keyup', function() {
+				$('#queryInput').bind('keyup change', function() {
 					$('#urlInput').val(buildUrl());
 				});
 			}
