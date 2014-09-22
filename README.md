@@ -50,3 +50,4 @@ Create hash values in either MD5 or SHA-1 format.
 	- save request headers
 	- format body based on content-type header (raw/formatted option)
 	- save state?
+	- oauth integration

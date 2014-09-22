@@ -190,10 +190,16 @@ func validateJsonHandler(rw http.ResponseWriter, req *http.Request) {
 
 func compareJsonHandler(rw http.ResponseWriter, req *http.Request) {
 	InfoLog.Println("compareJsonHandler called")
+	var resultTemplate, _ = template.ParseFiles(compareJsonHtml)
 
 	jsonOne := req.FormValue("jsonOne")
 	jsonTwo := req.FormValue("jsonTwo")
 
+	if len(jsonOne) < 1 || len(jsonTwo) < 1 {
+		responseData := ResponseData{}
+		resultTemplate.Execute(rw, responseData)
+		fmt.Println("herer...")
+	}
 	result, err := myTools.JsonCompare([]byte(jsonOne), []byte(jsonTwo))
 
 	if err != nil {
@@ -202,9 +208,7 @@ func compareJsonHandler(rw http.ResponseWriter, req *http.Request) {
 	
 	// TODO pass both inputs...?
 	responseData := ResponseData{Input: jsonOne, Output: string(result), Field: "JsonDiv", Valid: (err == nil)}
-	
-	var resultTemplate, err1 = template.ParseFiles(compareJsonHtml)
-	check(err1)
+
 	resultTemplate.Execute(rw, responseData)
 }
 
