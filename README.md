@@ -43,11 +43,10 @@ Create hash values in either MD5 or SHA-1 format.
 - Enhance Proxy
 	- authentication
 	- filtering
-	- make pretty
-	- construct URL, popup?
 	- store calls
 	- split/make multiple calls
 	- save request headers
 	- format body based on content-type header (raw/formatted option)
 	- save state?
 	- oauth integration
+	- typeahead for headers?

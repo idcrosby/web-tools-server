@@ -342,7 +342,7 @@ func proxyHandler(rw http.ResponseWriter, req *http.Request) {
 				}
 			}	
 		}
-		request := goProxy.BuildRequest(thisUrl, method, []byte(reqBody), headers)
+		request := goProxy.DefaultGoProxy.BuildRequest(thisUrl, method, []byte(reqBody), headers)
 		if Verbose {
 			InfoLog.Println(request)
 		}
@@ -350,7 +350,7 @@ func proxyHandler(rw http.ResponseWriter, req *http.Request) {
 		var respHeaders string
 		var status string
 		var requestHeaders string
-		response, err := goProxy.ExecuteRequest(request)
+		response, err := goProxy.DefaultGoProxy.ExecuteRequest(request)
 		if Verbose {
 			InfoLog.Println(response)
 		}
