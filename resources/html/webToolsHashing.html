@@ -80,7 +80,8 @@
 						<form class="form" role="form" action="/hashing">
 							<div class="btn-group form-group">
 								<button id="md5Btn" type="button" class="btn btn-default active" onClick="selectHash(this)">MD5</button>
-								<button type="button" class="btn btn-default" onClick="selectHash(this)">SHA-1</button>
+								<button id="sha1Btn" type="button" class="btn btn-default" onClick="selectHash(this)">SHA-1</button>
+								<button id="sha256Btn" type="button" class="btn btn-default" onClick="selectHash(this)">SHA-256</button>
 							</div>
 							<input id="hashType" type="hidden" name="hashType" value="Md5">
 							<div class="form-group">
@@ -124,8 +125,10 @@
 				var hashType = document.getElementById('hashType');
 				if (el.id == "md5Btn") {
 					hashType.value = 'Md5';
-				} else {
+				} else if (el.id == "sha1Btn") {
 					hashType.value = 'Sha1';
+				} else {
+					hashType.value = 'Sha256';
 				}
 			}
 

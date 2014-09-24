@@ -223,6 +223,8 @@ func hashingHandler(rw http.ResponseWriter, req *http.Request) {
 			hash = myTools.Md5Hash([]byte(input))
 		} else if hashType == "Sha1" {
 			hash = myTools.Sha1Hash([]byte(input))
+		} else if hashType == "Sha256" {
+			hash = myTools.Sha256Hash([]byte(input))
 		} else {
 			hash = "Error: Unknown hashing type."
 		}
