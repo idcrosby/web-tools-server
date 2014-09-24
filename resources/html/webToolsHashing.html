@@ -74,43 +74,24 @@
 
 				<div class="panel panel-primary" id="Md5HashDiv">
 					<div class="panel-heading">
-						<h3 class="panel-title">Md5 Hashing</h3>
+						<h3 class="panel-title">Hashing</h3>
 					</div>
 					<div class="panel-body" method="get">
-						<div class="btn-group">
-							<button id="md5Btn" type="button" class="btn btn-default" onClick="selectHash(this)">MD5</button>
-							<button type="button" class="btn btn-default" onClick="selectHash(this)">SHA-1</button>
-						</div>
-						<br>
 						<form class="form" role="form" action="/hashing">
+							<div class="btn-group form-group">
+								<button id="md5Btn" type="button" class="btn btn-default active" onClick="selectHash(this)">MD5</button>
+								<button type="button" class="btn btn-default" onClick="selectHash(this)">SHA-1</button>
+							</div>
 							<input id="hashType" type="hidden" name="hashType" value="Md5">
 							<div class="form-group">
-								<label class="sr-only" for="md5Input">Value to Hash</label>
-								<input type="text" class="form-control" id="md5Input" placeholder="Value to Hash" name="data">
+								<label class="sr-only" for="hashInput">Value to Hash</label>
+								<input type="text" class="form-control" id="hashInput" placeholder="Value to Hash" name="data">
 							</div>
 							<button type="submit" class="btn btn-default btn-primary">Hash</button>
 						</form>
-						<textarea class="form-control" name="ResultArea" disabled rows="1" cols="50">{{.Output}}</textarea>
+						<textarea id="hashOutput" class="form-control" name="ResultArea" disabled rows="1" cols="50">{{.Output}}</textarea>
 					</div>
 				</div>
-
-				<div class="panel panel-primary" id="Sha1HashDiv">
-					<div class="panel-heading">
-						<h3 class="panel-title">SHA-1 Hashing</h3>
-					</div>
-					<div class="panel-body" method="get">
-						<form class="form" role="form" action="/hashing">
-							<input type="hidden" name="hashType" value="Sha1">
-							<div class="form-group">
-								<label for="sha1Input">Value to Hash</label>
-								<input type="text" class="form-control" id="sha1Input" placeholder="input" name="data">
-							</div>
-							<button type="submit" class="btn btn-default">Hash</button>
-						</form>
-						<textarea class="form-control" name="ResultArea" disabled rows="1" cols="50">{{.Output}}</textarea>
-					</div>
-				</div>
-
 			</div> <!-- /jumbotron -->
 		</div> <!-- /container -->
 		<script type="text/javascript">
@@ -118,14 +99,12 @@
 			function init() {
 				hideAllResultAreas();
 
+				if ("{{.Output}}" != "") {
+					document.getElementById('hashInput').value = "{{.Input}}";
+					document.getElementById('hashOutput').style.visibility = "visible";
+				}
 				if ({{.Valid}}) {
 					console.log("valid response for {{.Field}}")
-
-					var div = document.getElementById("{{.Field}}");
-					// var textAreas = div.getElementsByTagName('textarea');
-					// textAreas[0].style.visibility="visible";
-					// var inputs = div.getElementsByTagName('input');
-					// inputs[0].value="{{.Input}}";
 				}
 			}
 
@@ -141,14 +120,12 @@
 			function selectHash(el) {
 				$(el).addClass('active');
 				$(el).siblings().removeClass('active');
-				// $('hashType').value = ""
-				var classNames = document.getElementById('md5Btn').className;
-				console.log(el.id);
+				// document.getElementById('hashOutput').value = "";
+				var hashType = document.getElementById('hashType');
 				if (el.id == "md5Btn") {
-					$('hashType').val('Md5');
+					hashType.value = 'Md5';
 				} else {
-					console.log('set to sha1');
-					$('hashType').val('Sha1');
+					hashType.value = 'Sha1';
 				}
 			}
 
