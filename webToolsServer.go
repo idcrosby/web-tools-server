@@ -326,6 +326,7 @@ func proxyHandler(rw http.ResponseWriter, req *http.Request) {
 	var responseData = ProxyResponse{}
 	urlString := req.FormValue("url")
 	method := req.FormValue("method")
+	file := req.FormValue("file")
 	reqBody := req.FormValue("reqBody")
 
 	err := req.ParseForm()
@@ -342,9 +343,18 @@ func proxyHandler(rw http.ResponseWriter, req *http.Request) {
 				if len(values[0]) > 0 {
 					headers[values[0]] = req.Form["headerValue" + subs[1]]
 				}
-			}	
+			}
 		}
-		request := goProxy.DefaultGoProxy.BuildRequest(thisUrl, method, []byte(reqBody), headers)
+		var payload []byte
+		var bodyReader io.Reader
+		if (len(file) > 0) {
+			payload, err = ioutil.ReadFile(file)
+			check(err)
+		} else {
+			payload = []byte(reqBody)
+		}
+		bodyReader = bytes.NewReader(payload)
+		request := goProxy.DefaultGoProxy.BuildRequest(thisUrl, method, bodyReader, headers)
 		if Verbose {
 			InfoLog.Println(request)
 		}

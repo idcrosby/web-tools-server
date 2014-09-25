@@ -112,26 +112,6 @@
 										</div>
 									</div>
 								</div>
-								<br>
-<!-- 							</div> -->
-							<div class="form-group" >
-								<label for="headerTable">Headers</label>
-								<button name="add" type="button" class="btn btn-default btn-sm" onclick="addHeader()">
-											<span class="glyphicon glyphicon-plus"></span>
-								</button>
-							</div>
-							<div class="form-group">
-								<table class="table table-striped" id="headerTable">
-									<tr id="row0">
-										<td class="col-md-3"><input class="form-control" type="text" name="headerName" placeholder="name"/></td>
-										<td class="col-md-12"><input class="form-control" type="text" name="headerValue" placeholder="value"/></td>
-										<td class="col-md-1"><button name="row0" type="button" class="btn btn-default" onclick="removeHeader(this)">
-											<span class="glyphicon glyphicon-remove"></span>
-										</button></td>
-									</tr>
-								</table>
-							</div>
-
 							<div id="methodRadio" class="radio">
 								<label class="radio-inline">
 									<input type="radio" name="method" id="getRadio" value="GET" onclick="methodSelect()" checked> GET
@@ -155,8 +135,36 @@
 									<input type="radio" name="method" id="optionsRadio" value="OPTIONS" onclick="methodSelect()"> OPTIONS
 								</label>
 							</div>
+<!-- 							</div> -->
+							<div class="form-group" >
+								<label for="headerTable">Headers</label>
+								<button name="add" type="button" class="btn btn-default btn-sm" onclick="addHeader()">
+											<span class="glyphicon glyphicon-plus"></span>
+								</button>
+							</div>
 							<div class="form-group">
-								<textarea id="bodyArea" class="form-control" name="reqBody" disabled rows="5" cols="50">{{.InBody}}</textarea>
+								<table class="table table-striped" id="headerTable">
+									<tr id="row0">
+										<td class="col-md-3"><input class="form-control" type="text" name="headerName" placeholder="name"/></td>
+										<td class="col-md-12"><input class="form-control" type="text" name="headerValue" placeholder="value"/></td>
+										<td class="col-md-1"><button name="row0" type="button" class="btn btn-default" onclick="removeHeader(this)">
+											<span class="glyphicon glyphicon-remove"></span>
+										</button></td>
+									</tr>
+								</table>
+							</div>
+							<div class="form-group">
+								<label for="bodyArea">Body</label>
+								<div class="btn-group form-group">
+									<button id="rawBody" type="button" class="btn btn-default active" onClick="selectBody(this)" data-toggle="collapse" data-target="#bodyArea">Raw</button>
+									<button id="fileBody" type="button" class="btn btn-default" onClick="selectBody(this)" data-toggle="collapse" data-target="#fileDiv">File</button>
+								</div>
+								<textarea id="bodyArea" class="form-control collapse" name="reqBody" disabled rows="5" cols="50">{{.InBody}}</textarea>
+								<!-- <input id="fileInput" type="hidden" name="file" value=""> -->
+								<div id="fileDiv" class="form-group collapse">
+								    <label for="fileInput">File input</label>
+								    <input type="file" id="fileInput" name="file">
+								 </div>
 							</div>
 							<button type="submit" class="btn btn-primary btn">Go!</button>
 							<button type="button" class="btn" onClick="clearFields()">Clear</button>
@@ -327,6 +335,18 @@
 				console.log('Save Request');
 			}
 
+			function selectBody(el) {
+				$(el).addClass('active');
+				$(el).siblings().removeClass('active');
+
+				var hashType = document.getElementById('hashType');
+				if (el.id == "fileBody") {
+					// todo get
+					fileInput.value = '...';
+				} else {
+					fileInput.value = '';
+				}
+			}
 		</script>
 		<!-- Bootstrap core JavaScript
     	================================================== -->
