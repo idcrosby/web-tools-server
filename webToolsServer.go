@@ -198,7 +198,7 @@ func compareJsonHandler(rw http.ResponseWriter, req *http.Request) {
 	if len(jsonOne) < 1 || len(jsonTwo) < 1 {
 		responseData := ResponseData{}
 		resultTemplate.Execute(rw, responseData)
-		fmt.Println("herer...")
+		return
 	}
 	result, err := myTools.JsonCompare([]byte(jsonOne), []byte(jsonTwo))
 

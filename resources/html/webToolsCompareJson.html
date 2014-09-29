@@ -90,7 +90,7 @@
 							</div>
 							<button type="submit" id="jsonSubmit" class="btn btn-primary btn-block">Compare</button>
 						</form>
-						<textarea class="form-control" name="ResultArea" rows="10" id="jsonOutput" disabled>{{.Output}}</textarea>
+						<textarea class="form-control collapse" name="ResultArea" rows="10" id="jsonOutput" disabled>{{.Output}}</textarea>
 					</div>
 				</div>
 			</div> <!-- /jumbotron -->
@@ -98,33 +98,22 @@
 		<script type="text/javascript">
 			
 			function init() {
-				hideAllResultAreas();
 
 				if ("{{.Output}}" != "") {
-					var el = document.getElementById("jsonOutput");
-					el.style.visibility="visible";
-					document.getElementById("jsonInput").value="{{.Input}}";
-					var feedbackSpan = document.createElement('span');
+					$('#jsonOutput').collapse('show');
+					document.getElementById("jsonInputOne").value="{{.Input}}";
+					// var feedbackSpan = document.createElement('span');
 					
 					if ({{.Valid}}) {
 						console.log("valid response for {{.Field}}");
-						feedbackSpan.className="glyphicon glyphicon-ok form-control-feedback";
-						document.getElementById("jsonForm").className="form-group has-success has-feedback";
+						// feedbackSpan.className="glyphicon glyphicon-ok form-control-feedback";
+						// document.getElementById("jsonForm").className="form-group has-success has-feedback";
 					} else {
 						console.log("invalid response for {{.Field}}");
-						feedbackSpan.className="glyphicon glyphicon-remove form-control-feedback";
-						document.getElementById("jsonForm").className="form-group has-error has-feedback";
+						// feedbackSpan.className="glyphicon glyphicon-remove form-control-feedback";
+						// document.getElementById("jsonForm").className="form-group has-error has-feedback";
 					}
-					document.getElementById("jsonForm").appendChild(feedbackSpan);
-				}
-			}
-
-			function hideAllResultAreas() {
-				console.log("hiding all...")
-				var textAreas = document.getElementsByTagName('textarea');
-				for (var i = 0, j = textAreas.length; i < j; i++) {
-					if (textAreas[i].name.indexOf("Result") > -1)
-						textAreas[i].style.visibility="hidden";
+					// document.getElementById("jsonForm").appendChild(feedbackSpan);
 				}
 			}
 

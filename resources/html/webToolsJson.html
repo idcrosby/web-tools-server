@@ -115,7 +115,7 @@
 
 							<button type="submit" id="jsonSubmit" class="btn btn-primary btn-block">Validate</button>
 						</form>
-						<textarea class="form-control" name="ResultArea" rows="10" id="jsonOutput" disabled>{{.Output}}</textarea>
+						<textarea class="form-control collapse" name="ResultArea" rows="10" id="jsonOutput" disabled>{{.Output}}</textarea>
 					</div>
 				</div>
 			</div> <!-- /jumbotron -->
@@ -123,11 +123,9 @@
 		<script type="text/javascript">
 			
 			function init() {
-				hideAllResultAreas();
 
 				if ("{{.Output}}" != "") {
-					var el = document.getElementById("jsonOutput");
-					el.style.visibility="visible";
+					$('#jsonOutput').collapse('show');
 					document.getElementById("jsonInput").value="{{.Input}}";
 					var feedbackSpan = document.createElement('span');
 					
@@ -141,15 +139,6 @@
 						document.getElementById("jsonForm").className="form-group has-error has-feedback";
 					}
 					document.getElementById("jsonForm").appendChild(feedbackSpan);
-				}
-			}
-
-			function hideAllResultAreas() {
-				console.log("hiding all...")
-				var textAreas = document.getElementsByTagName('textarea');
-				for (var i = 0, j = textAreas.length; i < j; i++) {
-					if (textAreas[i].name.indexOf("Result") > -1)
-						textAreas[i].style.visibility="hidden";
 				}
 			}
 
