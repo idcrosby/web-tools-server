@@ -370,7 +370,7 @@ func proxyHandler(rw http.ResponseWriter, req *http.Request) {
 			body, _ := ioutil.ReadAll(response.Body)
 			reqDump, _ := httputil.DumpRequestOut(request, false)
 			// Strip out top line to get only headers
-			requestHeaders = strings.SplitN(string(reqDump),"\n",2)[1]
+			requestHeaders = strings.TrimSpace(strings.SplitN(string(reqDump),"\n",2)[1])
 			respHeaders = headersToString(response.Header)
 			responseString = string(body)
 			status = response.Status
@@ -441,7 +441,7 @@ func headersToString(headers map[string][]string) string {
 		keys = append(keys, k)
 	}
 	sort.Strings(keys)
-	for _, k := range keys {
+	for ix, k := range keys {
 		buffer.WriteString(k + ": ")
 		values := headers[k]
 		for i, val := range values {
@@ -451,7 +451,9 @@ func headersToString(headers map[string][]string) string {
 				buffer.WriteString(val + ", ")
 			}
 		}
-		buffer.WriteString("\n")
+		if ix < (len(keys) - 1) { 
+			buffer.WriteString("\n")
+		}
 	}
 
 	return string(buffer.Bytes())

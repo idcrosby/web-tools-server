@@ -238,8 +238,7 @@
 					lines = $('#formattedResponseText').val().split("\n");
 					$('#formattedResponseText').attr('rows', lines.length + 1);
 					lines = $('#requestHeaders').val().split("\n");
-					// Not sure why this seems to have extra line breaks
-					$('#requestHeaders').attr('rows', lines.length - 1);
+					$('#requestHeaders').attr('rows', lines.length);
 
 					if ("{{.OutBody}}" != "") {
 						var parsed = JSON.parse({{.OutBody}})
@@ -378,6 +377,8 @@
 
 			function saveRequest() {
 				console.log('Save Request');
+
+				// TODO convert request to JSON object?
 			}
 
 			function selectBody(el) {
