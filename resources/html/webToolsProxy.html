@@ -75,9 +75,29 @@
 						<h3 class="panel-title">CURLing</h3>
 					</div>
 					<div class="panel-body" method="get">
+						<div id="savedRequests">
+							<label for="requestsTable">Saved Requests
+								<button type="button" class="btn btn-default" data-toggle="collapse" data-target="#requestsTable">
+									<span class="glyphicon glyphicon-expand"></span>
+								</button>
+							</label>
+							<table class="table table-striped collapse" id="requestsTable">
+								<tr id="row0">
+									<td class="col-md-3"><input class="form-control" type="text" name="requestName" placeholder="name"/></td>
+									<td class="col-md-12"><input class="form-control" type="text" name="requestUrl" placeholder="url"/></td>
+									<td class="col-md-1"><button name="delete0" type="button" class="btn btn-default" onclick="removeRequest(this)">
+										<span class="glyphicon glyphicon-remove"></span>
+									</button></td>
+									<td class="col-md-1"><button name="play0" type="button" class="btn btn-default" onclick="applyRequest(this)">
+										<span class="glyphicon glyphicon-play"></span>
+									</button></td>
+								</tr>
+							</table>
+						</div>
+
 						<form class="form" role="form" action="/proxy">
 							<div class="form-group">
-								<label for="urlInput">URL</label>
+								<label for="urlInput"></label>
 								<input type="text" class="form-control" id="urlInput" placeholder="url" name="url" value="{{.InUrl}}">
 								<br>
 								<button type="button" class="btn btn-default" data-toggle="collapse" data-target="#urlBuilder">
@@ -89,21 +109,15 @@
 										<div class="form-group">
 											<label class="sr-only" for="protocolInput">Protocol</label>
 											<input type="text" class="form-control" id="protocolInput" placeholder="protocol">
-										<!-- </div> -->
-										<!-- <div class="form-group"> -->
 										    <div class="input-group">
 										    	<div class="input-group-addon">://</div>
 										     	<input class="form-control" id="hostInput" type="text" placeholder="host">
 										    </div>
-										<!-- </div> -->
-										<!-- <div class="form-group"> -->
 											<div class="input-group">
 											<div class="input-group-addon">/</div>
 										    <label class="sr-only" for="pathInput">Path</label>
 										    <input type="text" class="form-control" id="pathInput" placeholder="Path">
 											</div>
-										<!-- </div> -->
-										<!-- <div class="form-group"> -->
 											<div class="input-group">
 											<div class="input-group-addon">?</div>
 										    <label class="sr-only" for="queryInput">Query</label>
@@ -177,7 +191,18 @@
 							<label for="responseHeaders">Response Headers</label>
 							<textarea id="responseHeaders" class="form-control" disabled rows="1" cols="50">{{.OutHeaders}}</textarea>
 							<label for="responseText">Body</label>
-							<textarea id="responseText" class="form-control" name="ResultArea" disabled rows="1" cols="50">{{.OutBody}}</textarea>
+							<ul class="nav nav-tabs" role="tablist">
+								<li class="active"><a href="#formattedResponse" role="tab" data-toggle="tab">Formatted</a></li>
+								<li><a href="#rawResponse" role="tab" data-toggle="tab">Raw</a></li>
+							</ul>
+							<div class="tab-content" id="responseTab">
+								<div class="tab-pane active" id="formattedResponse">
+									<textarea id="formattedResponseText" class="form-control" name="ResultArea" disabled rows="1" cols="50">Formatted</textarea>
+								</div>
+								<div class="tab-pane" id="rawResponse">
+									<textarea id="rawResponseText" class="form-control" name="ResultArea" disabled rows="1" cols="50">{{.OutBody}}</textarea>
+								</div>
+							</div>
 						</div>
 					</div>
 				</div>
@@ -187,7 +212,6 @@
 		<script type="text/javascript">
 			
 			function init() {
-				// hideAllResultAreas();
 
 				if ({{.Valid}}) {
 					$('#responseDiv').collapse('show');
@@ -209,11 +233,21 @@
 					var lines = $('#responseHeaders').val().split("\n");
 					$('#responseHeaders').attr('rows', lines.length + 1);
 
-					lines = $('#responseText').val().split("\n");
-					$('#responseText').attr('rows', lines.length + 1);
+					lines = $('#rawResponseText').val().split("\n");
+					$('#rawResponseText').attr('rows', lines.length + 1);
+					lines = $('#formattedResponseText').val().split("\n");
+					$('#formattedResponseText').attr('rows', lines.length + 1);
 					lines = $('#requestHeaders').val().split("\n");
 					// Not sure why this seems to have extra line breaks
 					$('#requestHeaders').attr('rows', lines.length - 1);
+
+					if ("{{.OutBody}}" != "") {
+						var parsed = JSON.parse({{.OutBody}})
+						$('#formattedResponseText').val(JSON.stringify(parsed, null, "\t"));
+					}
+
+					lines = $('#formattedResponseText').val().split("\n");
+					$('#formattedResponseText').attr('rows', lines.length + 1);
 				}
 
 				$('#urlInput').bind('keyup change', function() {
@@ -249,14 +283,6 @@
 
 			function buildUrl() {
 				return $('#protocolInput').val() + "://" + $('#hostInput').val() + "/" + $('#pathInput').val() + "?" + $('#queryInput').val();
-			}
-
-			function hideAllResultAreas() {
-				var textAreas = document.getElementsByTagName('textarea');
-				for (var i = 0, j = textAreas.length; i < j; i++) {
-					if (textAreas[i].name.indexOf("Result") > -1)
-						textAreas[i].style.visibility="hidden";
-				}
 			}
 
 			function addHeader() {
@@ -310,6 +336,25 @@
 				}
 			}
 
+			function applyRequest(el) {
+
+			}
+
+			function removeRequest(el) {
+				try {
+					var rowId = el.parentNode.parentNode.id;
+					var table = document.getElementById("requestsTable");
+					for (var i = 0, row; row = table.rows[i]; i++) {
+						if (row.id === rowId) {
+							table.deleteRow(i);
+							break;
+						}
+					}
+				} catch(e) {
+					alert(e);
+				}
+			}
+
 			function methodSelect() {
 				var method = $('input[name=method]:checked', '#methodRadio').val(); 
 				var bodyEl = document.getElementById("bodyArea");
@@ -346,6 +391,10 @@
 				} else {
 					fileInput.value = '';
 				}
+			}
+
+			function formatResponse(format) {
+				console.log(format)
 			}
 		</script>
 		<!-- Bootstrap core JavaScript
