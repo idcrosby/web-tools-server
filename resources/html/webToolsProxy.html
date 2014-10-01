@@ -167,18 +167,34 @@
 									</tr>
 								</table>
 							</div>
-							<div class="form-group">
+							<div id="requestBody" class="form-group collapse">
 								<label for="bodyArea">Body</label>
-								<div class="btn-group form-group">
-									<button id="rawBody" type="button" class="btn btn-default active" onClick="selectBody(this)" data-toggle="collapse" data-target="#bodyArea">Raw</button>
-									<button id="fileBody" type="button" class="btn btn-default" onClick="selectBody(this)" data-toggle="collapse" data-target="#fileDiv">File</button>
+
+								<ul class="nav nav-tabs" role="tablist">
+									<li class="active"><a href="#rawPayload" role="tab" data-toggle="tab">Raw</a></li>
+									<li><a href="#formPayload" role="tab" data-toggle="tab">Form</a></li>
+									<li><a href="#filePayload" role="tab" data-toggle="tab">File</a></li>
+								</ul>
+								<div class="tab-content" id="responseTab">
+									<div class="tab-pane active" id="rawPayload">
+										<textarea id="bodyArea" class="form-control" name="reqBody" rows="5" cols="50">{{.InBody}}</textarea>
+									</div>
+									<div class="tab-pane active" id="formPayload">
+										<table class="table table-striped" id="formBodyTable">
+											<tr id="bodyRow0">
+												<td class="col-md-3"><input class="form-control" type="text" name="formName" placeholder="name"/></td>
+												<td class="col-md-12"><input class="form-control" type="text" name="formValue" placeholder="value"/></td>
+												<td class="col-md-1"><button name="row0" type="button" class="btn btn-default" onclick="removeHeader(this)">
+													<span class="glyphicon glyphicon-remove"></span>
+												</button></td>
+											</tr>
+										</table>
+									</div>
+									<div class="tab-pane" id="filePayload">
+									    <label for="fileInput">File input</label>
+								    	<input type="file" id="fileInput" name="file">
+									</div>
 								</div>
-								<textarea id="bodyArea" class="form-control collapse" name="reqBody" disabled rows="5" cols="50">{{.InBody}}</textarea>
-								<!-- <input id="fileInput" type="hidden" name="file" value=""> -->
-								<div id="fileDiv" class="form-group collapse">
-								    <label for="fileInput">File input</label>
-								    <input type="file" id="fileInput" name="file">
-								 </div>
 							</div>
 							<button type="submit" class="btn btn-primary btn">Go!</button>
 							<button type="button" class="btn" onClick="clearFields()">Clear</button>
@@ -358,10 +374,11 @@
 				var method = $('input[name=method]:checked', '#methodRadio').val(); 
 				var bodyEl = document.getElementById("bodyArea");
 				if (method === "PUT" || method === "POST") {
-					bodyEl.disabled=false;
+					$('#requestBody').collapse('show');
+					// bodyEl.disabled=false;
 				} else {
-
-					bodyEl.disabled=true;
+					$('#requestBody').collapse('hide');
+					// bodyEl.disabled=true;
 				}
 			}
 
