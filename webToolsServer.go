@@ -326,13 +326,17 @@ func proxyHandler(rw http.ResponseWriter, req *http.Request) {
 	var responseData = ProxyResponse{}
 	urlString := req.FormValue("url")
 	method := req.FormValue("method")
-	file := req.FormValue("file")
 	reqBody := req.FormValue("reqBody")
+	// file := req.FormValue("file")
+	file, _, err := req.FormFile("file")
 
-	err := req.ParseForm()
-	check(err)
-
-	// TODO check values
+	if err != nil {
+		fmt.Printf("Cannot load file...", err)
+		// Can't read file / no file
+		//check(err)
+		// ignore
+	}
+	
 	if len(urlString) > 0 {
 		thisUrl, err := url.Parse(urlString)
 		check(err)
@@ -347,9 +351,11 @@ func proxyHandler(rw http.ResponseWriter, req *http.Request) {
 		}
 		var payload []byte
 		var bodyReader io.Reader
-		if (len(file) > 0) {
-			payload, err = ioutil.ReadFile(file)
+		if (file != nil) {
+			buf := bytes.NewBuffer(nil)
+			_, err := io.Copy(buf, file)
 			check(err)
+			payload = buf.Bytes()
 		} else {
 			payload = []byte(reqBody)
 		}
