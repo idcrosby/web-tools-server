@@ -41,15 +41,13 @@ Create hash values in either MD5 or SHA-1 format.
 - Handle Time Zone input
 - Implement search
 - Enhance Proxy
-	- pretty print output (option)
+	- save option (entire request and response, to file?)
 	- size appropirately if no line breaks
-	- allow file for request body
 	- save responses to file
 	- authentication
 	- filtering
 	- store calls
 	- split/make multiple calls
-	- save request headers
 	- format body based on content-type header (raw/formatted option)
 	- save state?
 	- oauth integration

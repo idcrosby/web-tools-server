@@ -384,7 +384,8 @@ func proxyHandler(rw http.ResponseWriter, req *http.Request) {
 			responseString = "Error Getting " + urlString
 			status = "500"
 		}
-		responseData = ProxyResponse{InUrl: urlString, InBody: reqBody, Status: status, 
+		inRequest := ProxyRequest{Url: urlString, Method: method, Headers: headers, Body: string(payload)}
+		responseData = ProxyResponse{InRequest: inRequest, Status: status, 
 			OutBody: responseString, OutHeaders: respHeaders, InHeaders: requestHeaders,Valid: true}
 	}
 	
@@ -471,6 +472,14 @@ type ResponseData struct {
 }
 
 type ProxyResponse struct {
-	InUrl, InBody, Status, OutBody, OutHeaders, InHeaders string
+	InRequest ProxyRequest
+	Status, OutBody, OutHeaders, InHeaders string
 	Valid bool  
+}
+
+type ProxyRequest struct {
+	Url string
+	Method string
+	Headers map[string][]string
+	Body string
 }
