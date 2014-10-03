@@ -178,7 +178,12 @@
 									<div class="tab-pane active" id="rawPayload">
 										<textarea id="bodyArea" class="form-control" name="reqBody" rows="5" cols="50">{{.InRequest.Body}}</textarea>
 									</div>
-									<div class="tab-pane active" id="formPayload">
+									<div class="tab-pane form-group" id="formPayload">
+										<br>
+										<label for="addParamButton">Add Parameter</label>
+										<button id="addParamButton" name="add" type="button" class="btn btn-default btn-sm" onclick="addParameter()">
+											<span class="glyphicon glyphicon-plus"></span>
+										</button>
 										<table class="table table-striped" id="formBodyTable">
 											<tr id="bodyRow0">
 												<td class="col-md-3"><input class="form-control" type="text" name="formName" placeholder="name"/></td>
@@ -231,8 +236,11 @@
 				if ({{.Valid}}) {
 					// Set previous values
 					document.getElementById("{{.InRequest.Method}}Radio").checked = true;
-					// cheap way to ensure body div is shown if it should be...
-					methodSelect();
+					
+					var method = $('input[name=method]:checked', '#methodRadio').val(); 
+					if (method === "PUT" || method === "POST") {
+						$('#requestBody').collapse('show');
+					}
 
 					var headerCount = 0;
 					{{range $name, $value := .InRequest.Headers}} 
@@ -389,13 +397,10 @@
 
 			function methodSelect() {
 				var method = $('input[name=method]:checked', '#methodRadio').val(); 
-				var bodyEl = document.getElementById("bodyArea");
 				if (method === "PUT" || method === "POST") {
 					$('#requestBody').collapse('show');
-					// bodyEl.disabled=false;
 				} else {
 					$('#requestBody').collapse('hide');
-					// bodyEl.disabled=true;
 				}
 			}
 
@@ -406,7 +411,8 @@
     					elements[i].value = "";
 			  		}
 				}
-				getRadio = document.getElementById('getRadio').checked = true;
+				document.getElementById('GETRadio').checked = true;
+				$('#responseDiv').collapse('hide');
 			}
 
 			function saveRequest() {
@@ -425,6 +431,57 @@
 					fileInput.value = '...';
 				} else {
 					fileInput.value = '';
+				}
+			}
+
+			function addParameter() {
+				var table = document.getElementById("formBodyTable");
+				var rowCount = table.rows.length;
+				var row = table.insertRow(rowCount);
+				row.id = "row" + rowCount;
+
+				var nameCell = row.insertCell(0);
+				nameCell.className = "col-md-3"
+				var el1 = document.createElement("input");
+				el1.type = "text";
+				el1.name = "formName" + rowCount;
+				el1.className = "form-control";
+				el1.placeholder = "name";
+				nameCell.appendChild(el1);
+
+				var valueCell = row.insertCell(1);
+				valueCell.className = "col-md-12"
+				var el2 = document.createElement("input");
+				el2.type = "text";
+				el2.name = "formValue" + rowCount;
+				el2.className = "form-control";
+				el2.placeholder = "value";
+				valueCell.appendChild(el2);
+
+				var removeCell = row.insertCell(2);
+				removeCell.className = "col-md-1"
+				var el3 = document.createElement("button");
+				el3.type = "button";
+				el3.className="btn btn-default"
+				el3.setAttribute('onclick', 'removeParameter(this)');
+				var btnSpan = document.createElement("span");
+				btnSpan.className = "glyphicon glyphicon-remove";
+				el3.appendChild(btnSpan);
+				removeCell.appendChild(el3);
+			}
+
+			function removeParameter(el) {
+				try {
+					var rowId = el.parentNode.parentNode.id;
+					var table = document.getElementById("formBodyTable");
+					for (var i = 0, row; row = table.rows[i]; i++) {
+						if (row.id === rowId) {
+							table.deleteRow(i);
+							break;
+						}
+					}
+				} catch(e) {
+					alert(e);
 				}
 			}
 

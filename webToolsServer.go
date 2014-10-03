@@ -66,9 +66,7 @@ func main() {
 	ErrorLog = log.New(writer, "ERROR: ", log.LstdFlags)
 
 	http.HandleFunc("/", errorHandler(defaultHandler))
-	http.HandleFunc("/encoding", errorHandler(base64EncodeHandler))
-	http.HandleFunc("/base64Decode", errorHandler(base64DecodeHandler))
-	http.HandleFunc("/urlEncode", errorHandler(urlEncodeHandler))
+	http.HandleFunc("/encoding", errorHandler(encodingHandler))
 	http.HandleFunc("/validateJson", errorHandler(validateJsonHandler))
 	http.HandleFunc("/compareJson", errorHandler(compareJsonHandler))
 	http.HandleFunc("/hashing", errorHandler(hashingHandler))
@@ -98,61 +96,49 @@ func defaultHandler(rw http.ResponseWriter, req *http.Request) {
 	webToolsTemplate.Execute(rw, responseData)
 }
 
-// TODO Merge these handlers
-func base64EncodeHandler(rw http.ResponseWriter, req *http.Request) {
-	InfoLog.Println("base64EncodeHandler called")
-	encode := retrieveParam(req, "data")
-
-	var responseData = ResponseData{}	
-	if (len(encode) != 0) {
-		encoded := myTools.Base64Encode([]byte(encode), false)
-		responseData = ResponseData{Input: encode, Output: encoded, Field: "EncodeDiv", Valid: true}
-	}
-	var resultTemplate, err = template.ParseFiles(encodingHtml)
-	check(err)
-	resultTemplate.Execute(rw, responseData) 
-}
-
-func base64DecodeHandler(rw http.ResponseWriter, req *http.Request) {
-	InfoLog.Println("base64DecodeHandler called")
-	decode := retrieveParam(req, "data")
-	var responseData = ResponseData{}
-	if (len(decode) != 0) {
-		decoded, err := myTools.Base64Decode(decode, false)
-		if (err != nil) {
-			decoded = []byte(err.Error())
-		}
-		responseData = ResponseData{Input: decode, Output: string(decoded), Field: "DecodeDiv", Valid: (err == nil)}
-	}
-	var resultTemplate, err = template.ParseFiles(encodingHtml)
-	check(err)
-	resultTemplate.Execute(rw, responseData)
-}
-
-func urlEncodeHandler(rw http.ResponseWriter, req *http.Request) {
-	InfoLog.Println("urlEncodeHandler called")
+func encodingHandler(rw http.ResponseWriter, req *http.Request) {
+	InfoLog.Println("encodingHandler called")
 	var responseData = ResponseData{}	
 	var output, field string
 	var err error
 
-	data := retrieveParam(req, "encode")
-	if len(data) != 0 {
-		field = "UrlEncodeDiv"
-		output = myTools.UrlEncode(data)
-	} else {
-		data = retrieveParam(req, "decode")
-		if len(data) != 0 {
+	data := req.FormValue("input")
+	decode := req.FormValue("decode")
+	encodingType := req.FormValue("encodingType")
+
+	if decode == "true" {
+		field = "DecodeDiv"
+		if encodingType == "URL" {
 			output, err = myTools.UrlDecode(data)
 			field = "UrlDecodeDiv"
 			if (err != nil) {
 				output = err.Error()
 			}
+		} else if encodingType == "Base64" {
+			fmt.Printf("base 64")
+			decoded, err := myTools.Base64Decode(data, false)
+			if (err != nil) {
+				output = err.Error()
+			} else {
+				output = string(decoded)
+			}
+		} else {
+			// Error
+		}
+	} else {
+		field = "EncodeDiv"
+		if encodingType == "URL" {
+			output = myTools.UrlEncode(data)
+		} else if encodingType == "Base64" {
+			output = myTools.Base64Encode([]byte(data), false)
+		} else {
+			// Error
 		}
 	}
 
 	responseData = ResponseData{Input: data, Output: output, Field: field, Valid: true}
-	var resultTemplate, err2 = template.ParseFiles(encodingHtml)
-	check(err2)
+	resultTemplate, err := template.ParseFiles(encodingHtml)
+	check(err)
 	resultTemplate.Execute(rw, responseData) 
 }
 
@@ -331,10 +317,7 @@ func proxyHandler(rw http.ResponseWriter, req *http.Request) {
 	file, _, err := req.FormFile("file")
 
 	if err != nil {
-		fmt.Printf("Cannot load file...", err)
-		// Can't read file / no file
-		//check(err)
-		// ignore
+		// ignore, assume no file submitted
 	}
 	
 	if len(urlString) > 0 {

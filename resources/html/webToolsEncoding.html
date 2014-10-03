@@ -69,70 +69,48 @@
 			  </div><!-- /.container-fluid -->
 			</div>
 
-
 		 	<div class="jumbotron">
 				<div class="panel panel-primary" id="EncodeDiv">
 					<div class="panel-heading">
-						<h3 class="panel-title">Base 64 Encoding</h3>
+						<h3 class="panel-title">Encoding</h3>
 					</div>
 					<div class="panel-body" method="get">
-						<form class="form-inline" role="form" action="/encoding">
+						<form id="EncodeForm" class="form" role="form" action="/encoding">
 							<div class="form-group">
-								<label for="encodeInput">To encode</label>
-								<input type="text" class="form-control" id="encodeInput" placeholder="input" name="data">
+								<input type="hidden" name="decode" value="false">
+								<div class="btn-group form-group">
+									<button id="base64Btn" type="button" class="btn btn-default active" onClick="selectEncoding(this)">Base64</button>
+									<button id="urlBtn" type="button" class="btn btn-default" onClick="selectEncoding(this)">URL</button>
+								</div>
+								<input id="encodingType" type="hidden" name="encodingType" value="Base64">
+								<label class="sr-only" for="encodeInput">To encode</label>
+								<input type="text" class="form-control" id="encodeInput" placeholder="input" name="input">
 							</div>
-							<button type="submit" class="btn btn-default">Encode</button>
+							<button type="submit" class="btn btn-primary btn-default">Encode</button>
 						</form>
-						<textarea class="form-control" name="ResultArea" disabled rows="1" cols="50">{{.Output}}</textarea>
+						<textarea id="encodeResponse" class="form-control collapse" name="ResultArea" disabled rows="1" cols="50">{{.Output}}</textarea>
 					</div>
 				</div>
 
 				<div class="panel panel-primary" id="DecodeDiv">
 					<div class="panel-heading">
-						<h3 class="panel-title">Base 64 Decoding</h3>
+						<h3 class="panel-title">Decoding</h3>
 					</div>
 					<div class="panel-body" method="get">
-						<form id="decodeForm" class="form-inline" role="form" action="/base64Decode">
+						<form id="DecodeForm" class="form" role="form" action="/encoding">
 							<div class="form-group">
-								<label for="decodeInput">To decode</label>
-								<input type="text" class="form-control" id="decodeInput" placeholder="input" name="data">
+								<input type="hidden" name="decode" value="true">
+								<div class="btn-group form-group">
+									<button id="base64DecodeBtn" type="button" class="btn btn-default active" onClick="selectDecoding(this)">Base64</button>
+									<button id="urlDecodeBtn" type="button" class="btn btn-default" onClick="selectDecoding(this)">URL</button>
+								</div>
+								<input id="decodingType" type="hidden" name="encodingType" value="Base64">
+								<label class="sr-only" for="decodeInput">To decode</label>
+								<input type="text" class="form-control" id="decodeInput" placeholder="input" name="input">
 							</div>
-							<button type="submit" class="btn btn-default">Decode</button>
+							<button type="submit" class="btn btn-primary btn-default">Decode</button>
 						</form>
-						<textarea class="form-control" name="ResultArea" disabled rows="1" cols="50">{{.Output}}</textarea>
-					</div>
-				</div>
-			</div> <!-- /jumbotron -->
-		 	<div class="jumbotron">
-				<div class="panel panel-primary" id="UrlEncodeDiv">
-					<div class="panel-heading">
-						<h3 class="panel-title">URL Encoding</h3>
-					</div>
-					<div class="panel-body" method="get">
-						<form id="urlEncodeForm" class="form-inline" role="form" action="/urlEncode">
-							<div class="form-group">
-								<label for="urlEncodeInput">To encode</label>
-								<input type="text" class="form-control" id="urlEncodeInput" placeholder="input" name="encode">
-							</div>
-							<button type="submit" class="btn btn-default">Encode</button>
-						</form>
-						<textarea class="form-control" name="ResultArea" disabled rows="1" cols="50">{{.Output}}</textarea>
-					</div>
-				</div>
-
-				<div class="panel panel-primary" id="UrlDecodeDiv">
-					<div class="panel-heading">
-						<h3 class="panel-title">URL Decoding</h3>
-					</div>
-					<div class="panel-body" method="get">
-						<form id="urlEncodeForm" class="form-inline" role="form" action="/urlEncode">
-							<div class="form-group">
-								<label for="urlEncodeInput">To decode</label>
-								<input type="text" class="form-control" id="urlDecodeInput" placeholder="input" name="decode">
-							</div>
-							<button type="submit" class="btn btn-default">Decode</button>
-						</form>
-						<textarea class="form-control" name="ResultArea" disabled rows="1" cols="50">{{.Output}}</textarea>
+						<textarea id="decodeResponse" class="form-control collapse" name="ResultArea" disabled rows="1" cols="50">{{.Output}}</textarea>
 					</div>
 				</div>
 			</div> <!-- /jumbotron -->
@@ -140,42 +118,52 @@
 		<script type="text/javascript">
 			
 			function init() {
-				hideAllResultAreas();
-
 				if ("{{.Output}}" != "") {
-					var div = document.getElementById("{{.Field}}");
-					var textAreas = div.getElementsByTagName('textarea');
-					textAreas[0].style.visibility="visible";
-					var inputs = div.getElementsByTagName('input');
-					inputs[0].value="{{.Input}}";
 					var feedbackSpan = document.createElement('span');
+					var id = "EncodeForm";
+					if ("{{.Field}}" == "EncodeDiv") {
+						$('#encodeInput').val({{.Input}})
+						$('#encodeResponse').collapse('show');
+					} else {
+						console.log('decoding')
+						$('#decodeInput').val({{.Input}})
+						$('#decodeResponse').collapse('show');
+						id = "DecodeForm";
+					}
 					
 					if ({{.Valid}}) {
 						console.log("valid response for {{.Field}}")
-
 						feedbackSpan.className="glyphicon glyphicon-ok form-control-feedback";
-						document.getElementById("decodeForm").className="form-group has-success has-feedback";
+						document.getElementById(id).className="form-group has-success has-feedback";
 					} else {
 						console.log("invalid response for {{.Field}}");
 						feedbackSpan.className="glyphicon glyphicon-remove form-control-feedback";
-						document.getElementById("decodeForm").className="form-group has-error has-feedback";
+						document.getElementById(id).className="form-group has-error has-feedback";
 					}
-					document.getElementById("decodeForm").appendChild(feedbackSpan);
+					document.getElementById(id).appendChild(feedbackSpan);
 				}
 			}
 
-			function hideAllResultAreas() {
-				console.log("hiding all...")
-				var textAreas = document.getElementsByTagName('textarea');
-				for (var i = 0, j = textAreas.length; i < j; i++) {
-					if (textAreas[i].name.indexOf("Result") > -1)
-						textAreas[i].style.visibility="hidden";
+			function selectEncoding(el) {
+				$(el).addClass('active');
+				$(el).siblings().removeClass('active');
+				var encodeType = document.getElementById('encodingType');
+				if (el.id == "base64Btn") {
+					encodeType.value = 'Base64';
+				} else if (el.id == "urlBtn") {
+					encodeType.value = 'URL';
 				}
 			}
 
-			function copyDate() {
-				var epoch = Math.round(new Date().getTime()/1000);
-				document.getElementById("epochTimeInput").value=epoch;
+			function selectDecoding(el) {
+				$(el).addClass('active');
+				$(el).siblings().removeClass('active');
+				var encodeType = document.getElementById('decodingType');
+				if (el.id == "base64DecodeBtn") {
+					encodeType.value = 'Base64';
+				} else if (el.id == "urlDecodeBtn") {
+					encodeType.value = 'URL';
+				}
 			}
 		</script>
 		<!-- Bootstrap core JavaScript
