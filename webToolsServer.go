@@ -339,8 +339,25 @@ func proxyHandler(rw http.ResponseWriter, req *http.Request) {
 			_, err := io.Copy(buf, file)
 			check(err)
 			payload = buf.Bytes()
-		} else {
+		} else if len(reqBody) > 0 {
 			payload = []byte(reqBody)
+		} else {
+			// Read form params and set Content-Type
+			headers["Content-Type"] = []string{"application/x-www-form-encoded"}
+			var formBuf bytes.Buffer
+			for name, values := range req.Form {
+				if subs := strings.Split(name, "formName"); len(subs) > 1 {
+					if len(values[0]) > 0 {
+						formBuf.WriteString(values[0])
+						formBuf.WriteString("=")
+						formBuf.WriteString(req.Form["formValue" + subs[1]][0])
+						formBuf.WriteString("&")
+					}
+				}
+			}
+			// formBuf
+			toString := formBuf.String()
+			payload = []byte(myTools.UrlEncode(toString[:len(toString)-1]))
 		}
 		bodyReader = bytes.NewReader(payload)
 		request := goProxy.DefaultGoProxy.BuildRequest(thisUrl, method, bodyReader, headers)
