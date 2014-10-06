@@ -7,7 +7,7 @@
 	    <meta name="author" content="idcrosby">
 	    <link rel="icon" href="/resources/favicon.ico">
 
-		<title>My Tools</title>
+		<title>Web Tools</title>
 
 	    <!-- Bootstrap core CSS -->
     	<link href="/resources/css/bootstrap.min.css" rel="stylesheet">
@@ -206,6 +206,7 @@
 						</form>
 						<div id="responseDiv" class="collapse">
 							<h3><span id="responseStatus">{{.Status}}</span></h3>
+							<h4>Response Time: {{.Time}}</h2>
 							<label for="requestHeaders">Request Headers</label>
 							<textarea id="requestHeaders" class="form-control" disabled rows="1" cols="50">{{.InHeaders}}</textarea>
 							<label for="responseHeaders">Response Headers</label>
@@ -411,8 +412,13 @@
     					elements[i].value = "";
 			  		}
 				}
+				$('#bodyArea').val('');
 				document.getElementById('GETRadio').checked = true;
-				$('#responseDiv').collapse('hide');
+				// if ($('#responseDiv').collapse()) {
+					$('#responseDiv').collapse({'toggle': false});
+					$('#responseDiv').collapse('hide');
+				// }
+				methodSelect();
 			}
 
 			function saveRequest() {

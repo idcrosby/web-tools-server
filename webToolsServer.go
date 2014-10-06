@@ -343,7 +343,6 @@ func proxyHandler(rw http.ResponseWriter, req *http.Request) {
 			payload = []byte(reqBody)
 		} else {
 			// Read form params and set Content-Type
-			headers["Content-Type"] = []string{"application/x-www-form-encoded"}
 			var formBuf bytes.Buffer
 			for name, values := range req.Form {
 				if subs := strings.Split(name, "formName"); len(subs) > 1 {
@@ -357,7 +356,10 @@ func proxyHandler(rw http.ResponseWriter, req *http.Request) {
 			}
 			// formBuf
 			toString := formBuf.String()
-			payload = []byte(myTools.UrlEncode(toString[:len(toString)-1]))
+			if len(toString) > 0 {
+				payload = []byte(myTools.UrlEncode(toString[:len(toString)-1]))
+				headers["Content-Type"] = []string{"application/x-www-form-encoded"}
+			}
 		}
 		bodyReader = bytes.NewReader(payload)
 		request := goProxy.DefaultGoProxy.BuildRequest(thisUrl, method, bodyReader, headers)
@@ -368,7 +370,9 @@ func proxyHandler(rw http.ResponseWriter, req *http.Request) {
 		var respHeaders string
 		var status string
 		var requestHeaders string
+		startTime := time.Now()
 		response, err := goProxy.DefaultGoProxy.ExecuteRequest(request)
+		responseTime := time.Since(startTime)
 		if Verbose {
 			InfoLog.Println(response)
 		}
@@ -385,7 +389,7 @@ func proxyHandler(rw http.ResponseWriter, req *http.Request) {
 			status = "500"
 		}
 		inRequest := ProxyRequest{Url: urlString, Method: method, Headers: headers, Body: string(payload)}
-		responseData = ProxyResponse{InRequest: inRequest, Status: status, 
+		responseData = ProxyResponse{InRequest: inRequest, Status: status, Time: responseTime.Seconds(),
 			OutBody: responseString, OutHeaders: respHeaders, InHeaders: requestHeaders,Valid: true}
 	}
 	
@@ -473,6 +477,7 @@ type ResponseData struct {
 
 type ProxyResponse struct {
 	InRequest ProxyRequest
+	Time float64
 	Status, OutBody, OutHeaders, InHeaders string
 	Valid bool  
 }
