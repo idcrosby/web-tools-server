@@ -10,6 +10,7 @@ import (
 	"io"
 	"io/ioutil"
 	"log"
+	"math"
 	"net/http"
 	"net/http/httputil"
 	"net/url"
@@ -389,7 +390,8 @@ func proxyHandler(rw http.ResponseWriter, req *http.Request) {
 			status = "500"
 		}
 		inRequest := ProxyRequest{Url: urlString, Method: method, Headers: headers, Body: string(payload)}
-		responseData = ProxyResponse{InRequest: inRequest, Status: status, Time: responseTime.Seconds(),
+		// roundFloatToInt(responseTime.)
+		responseData = ProxyResponse{InRequest: inRequest, Status: status, Time: responseTime.Nanoseconds()/1000000,
 			OutBody: responseString, OutHeaders: respHeaders, InHeaders: requestHeaders,Valid: true}
 	}
 	
@@ -470,6 +472,16 @@ func headersToString(headers map[string][]string) string {
 	return string(buffer.Bytes())
 }
 
+// Round float64 to int
+func roundFloatToInt(input float64) int {
+	floor := math.Floor(input)
+	diff := input - floor
+	if diff >= 0.5 {
+		floor++
+	}
+	return int(floor)
+}
+
 type ResponseData struct {
 	Input, Output, Field string
 	Valid bool
@@ -477,7 +489,7 @@ type ResponseData struct {
 
 type ProxyResponse struct {
 	InRequest ProxyRequest
-	Time float64
+	Time int64
 	Status, OutBody, OutHeaders, InHeaders string
 	Valid bool  
 }
