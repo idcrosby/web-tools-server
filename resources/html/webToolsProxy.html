@@ -80,6 +80,10 @@
 								<button type="button" class="btn btn-default" data-toggle="collapse" data-target="#requestsTable">
 									<span class="glyphicon glyphicon-expand"></span>
 								</button>
+								
+							</label>
+							<label class="pull-right">
+									<input type="checkbox" name="log"> Log Data
 							</label>
 							<table class="table table-striped collapse" id="requestsTable">
 								<tr id="row0">
@@ -104,28 +108,28 @@
 									Build URL <span class="glyphicon glyphicon-expand"></span>
 								</button>
 							</div>
-								<div id="urlBuilder" class="collapse">
-									<div class="form-inline" role="form">
-										<div class="form-group">
-											<label class="sr-only" for="protocolInput">Protocol</label>
-											<input type="text" class="form-control" id="protocolInput" placeholder="protocol">
-										    <div class="input-group">
-										    	<div class="input-group-addon">://</div>
-										     	<input class="form-control" id="hostInput" type="text" placeholder="host">
-										    </div>
+							<div id="urlBuilder" class="collapse">
+								<div class="form-inline" role="form">
+									<div class="form-group">
+										<label class="sr-only" for="protocolInput">Protocol</label>
+										<input type="text" class="form-control" id="protocolInput" placeholder="protocol">
+									    <div class="input-group">
+									    	<div class="input-group-addon">://</div>
+									     	<input class="form-control" id="hostInput" type="text" placeholder="host">
+									    </div>
 											<div class="input-group">
 											<div class="input-group-addon">/</div>
 										    <label class="sr-only" for="pathInput">Path</label>
 										    <input type="text" class="form-control" id="pathInput" placeholder="Path">
-											</div>
-											<div class="input-group">
+										</div>
+										<div class="input-group">
 											<div class="input-group-addon">?</div>
 										    <label class="sr-only" for="queryInput">Query</label>
 										    <input type="text" class="form-control" id="queryInput" placeholder="Query Params">
-											</div>
 										</div>
 									</div>
 								</div>
+							</div>
 							<div id="methodRadio" class="radio">
 								<label class="radio-inline">
 									<input type="radio" name="method" id="GETRadio" value="GET" onclick="methodSelect()" checked> GET

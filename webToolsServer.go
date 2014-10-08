@@ -108,15 +108,14 @@ func encodingHandler(rw http.ResponseWriter, req *http.Request) {
 	encodingType := req.FormValue("encodingType")
 
 	if decode == "true" {
-		field = "DecodeDiv"
 		if encodingType == "URL" {
 			output, err = myTools.UrlDecode(data)
-			field = "UrlDecodeDiv"
+			field = "URL_Decode"
 			if (err != nil) {
 				output = err.Error()
 			}
 		} else if encodingType == "Base64" {
-			fmt.Printf("base 64")
+			field = "Base64_Decode"
 			decoded, err := myTools.Base64Decode(data, false)
 			if (err != nil) {
 				output = err.Error()
@@ -127,10 +126,11 @@ func encodingHandler(rw http.ResponseWriter, req *http.Request) {
 			// Error
 		}
 	} else {
-		field = "EncodeDiv"
 		if encodingType == "URL" {
+			field = "URL_Encode"
 			output = myTools.UrlEncode(data)
 		} else if encodingType == "Base64" {
+			field = "Base64_Encode"
 			output = myTools.Base64Encode([]byte(data), false)
 		} else {
 			// Error
@@ -344,21 +344,15 @@ func proxyHandler(rw http.ResponseWriter, req *http.Request) {
 			payload = []byte(reqBody)
 		} else {
 			// Read form params and set Content-Type
-			var formBuf bytes.Buffer
+			params := url.Values{}
 			for name, values := range req.Form {
 				if subs := strings.Split(name, "formName"); len(subs) > 1 {
-					if len(values[0]) > 0 {
-						formBuf.WriteString(values[0])
-						formBuf.WriteString("=")
-						formBuf.WriteString(req.Form["formValue" + subs[1]][0])
-						formBuf.WriteString("&")
-					}
+					params.Set(values[0], req.Form["formValue" + subs[1]][0])
 				}
 			}
-			// formBuf
-			toString := formBuf.String()
+			toString := params.Encode()
 			if len(toString) > 0 {
-				payload = []byte(myTools.UrlEncode(toString[:len(toString)-1]))
+				payload = []byte(myTools.UrlEncode(toString))
 				headers["Content-Type"] = []string{"application/x-www-form-encoded"}
 			}
 		}

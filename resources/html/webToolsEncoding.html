@@ -79,8 +79,8 @@
 							<div class="form-group">
 								<input type="hidden" name="decode" value="false">
 								<div class="btn-group form-group">
-									<button id="base64Btn" type="button" class="btn btn-default active" onClick="selectEncoding(this)">Base64</button>
-									<button id="urlBtn" type="button" class="btn btn-default" onClick="selectEncoding(this)">URL</button>
+									<button id="base64EncodeBtn" type="button" class="btn btn-default active" onClick="selectEncoding(this)">Base64</button>
+									<button id="urlEncodeBtn" type="button" class="btn btn-default" onClick="selectEncoding(this)">URL</button>
 								</div>
 								<input id="encodingType" type="hidden" name="encodingType" value="Base64">
 								<label class="sr-only" for="encodeInput">To encode</label>
@@ -121,14 +121,27 @@
 				if ("{{.Output}}" != "") {
 					var feedbackSpan = document.createElement('span');
 					var id = "EncodeForm";
-					if ("{{.Field}}" == "EncodeDiv") {
-						$('#encodeInput').val({{.Input}})
+					var el;
+					if ("{{.Field}}".indexOf("Encode") > -1) {
+						$('#encodeInput').val({{.Input}});
 						$('#encodeResponse').collapse('show');
+						if ("{{.Field}}".indexOf("URL") > -1) {
+							el = document.getElementById("urlEncodeBtn");
+						} else {
+							el = document.getElementById("base64EncodeBtn");
+						}
+						selectEncoding(el);
 					} else {
-						console.log('decoding')
-						$('#decodeInput').val({{.Input}})
+						$('#decodeInput').val({{.Input}});
 						$('#decodeResponse').collapse('show');
 						id = "DecodeForm";
+						if ("{{.Field}}".indexOf("URL") > -1) {
+							el = document.getElementById("urlDecodeBtn");
+							console.log('here')
+						} else {
+							el = document.getElementById("base64DecodeBtn");
+						}
+						selectDecoding(el);
 					}
 					
 					if ({{.Valid}}) {
@@ -148,9 +161,9 @@
 				$(el).addClass('active');
 				$(el).siblings().removeClass('active');
 				var encodeType = document.getElementById('encodingType');
-				if (el.id == "base64Btn") {
+				if (el.id == "base64EncodeBtn") {
 					encodeType.value = 'Base64';
-				} else if (el.id == "urlBtn") {
+				} else if (el.id == "urlEncodeBtn") {
 					encodeType.value = 'URL';
 				}
 			}
