@@ -242,7 +242,7 @@ func convertTimeToEpochHandler(rw http.ResponseWriter, req *http.Request) {
 	if (len(timeString) != 0) {
 		myTime, _ := time.Parse("2006-01-02 15:04:05 -0700 MST", timeString)
 		epochTime := myTools.ConvertTimeToEpoch(myTime)
-		responseData = ResponseData{Input: timeString, Output: strconv.FormatInt(epochTime, 10), Field: "TimeToEpochDiv", Valid: true}
+		responseData = ResponseData{Input: timeString, Output: strconv.FormatInt(epochTime, 10), Field: "TimeToEpoch", Valid: true}
 	}
 	var resultTemplate, err = template.ParseFiles(timeHtml)
 	check(err)
@@ -256,7 +256,7 @@ func convertTimeFromEpochHandler(rw http.ResponseWriter, req *http.Request) {
 	if (len(input) != 0) {
 		epochTime, _ := strconv.ParseInt(input, 10, 64	)
 		time := myTools.ConvertTimeFromEpoch(epochTime)
-		responseData = ResponseData{Input: input, Output: time.String(), Field: "TimeFromEpochDiv", Valid: true}
+		responseData = ResponseData{Input: input, Output: time.String(), Field: "TimeFromEpoch", Valid: true}
 	}
 	var resultTemplate, err = template.ParseFiles(timeHtml)
 	check(err)
@@ -353,10 +353,11 @@ func proxyHandler(rw http.ResponseWriter, req *http.Request) {
 			toString := params.Encode()
 			if len(toString) > 0 {
 				payload = []byte(myTools.UrlEncode(toString))
-				headers["Content-Type"] = []string{"application/x-www-form-encoded"}
+				headers["Content-Type"] = []string{"application/x-www-form-urlencoded"}
 			}
 		}
 		bodyReader = bytes.NewReader(payload)
+		fmt.Println("Request body = " + string(payload))
 		request := goProxy.DefaultGoProxy.BuildRequest(thisUrl, method, bodyReader, headers)
 		if Verbose {
 			InfoLog.Println(request)

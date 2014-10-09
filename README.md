@@ -41,6 +41,7 @@ Create hash values in either MD5 or SHA-1 format.
 - Handle Time Zone input
 - Implement search
 - Enhance Proxy
+	- option to add Content-Length header
 	- add response time
 	- save option (entire request and response, to file?)
 	- size appropirately if no line breaks

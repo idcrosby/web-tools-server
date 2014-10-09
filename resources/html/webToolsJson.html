@@ -115,7 +115,7 @@
 
 							<button type="submit" id="jsonSubmit" class="btn btn-primary btn-block">Validate</button>
 						</form>
-						<textarea class="form-control collapse" name="ResultArea" rows="10" id="jsonOutput" disabled>{{.Output}}</textarea>
+						<textarea class="form-control collapse" name="ResultArea" rows="1" id="jsonOutput" disabled>{{.Output}}</textarea>
 					</div>
 				</div>
 			</div> <!-- /jumbotron -->
@@ -129,6 +129,9 @@
 					document.getElementById("jsonInput").value="{{.Input}}";
 					var feedbackSpan = document.createElement('span');
 					
+					var lines = $('#jsonOutput').val().split("\n");
+					$('#jsonOutput').attr('rows', lines.length + 1);
+
 					if ({{.Valid}}) {
 						console.log("valid response for {{.Field}}");
 						feedbackSpan.className="glyphicon glyphicon-ok form-control-feedback";
