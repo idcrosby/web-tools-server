@@ -108,10 +108,10 @@
 								<div class="col-xs-1">
 									<button type="submit" class="btn btn-default">Convert</button>
 								</div>
+							</div>
 								<button type="button" class="btn btn-default" data-toggle="collapse" data-target="#timeBuilder">
 									Build Time <span class="glyphicon glyphicon-expand"></span>
 								</button>
-							</div>
 							<div id="timeBuilder" class="collapse">
 								<div class="form-inline" role="form">
 									<div class="form-group">
@@ -141,25 +141,25 @@
 				if ({{.Valid}}) {
 					console.log("valid response for {{.Field}}")
 
-					var div = document.getElementById("{{.Field}}");
-					var textAreas = div.getElementsByTagName('textarea');
-					textAreas[0].style.visibility="visible";
-					var inputs = div.getElementsByTagName('input');
-					inputs[0].value="{{.Input}}";
+					if ("{{.Field}}" == "TimeFromEpoch") {
+						$('#timeFromEpochResult').collapse('show');
+					} else {
+						$('#timeToEpochResult').collapse('show');
+					}
 				}
 
-				$('#readableTimeInput').bind('keyup change', function() {
-					var url = document.createElement('a');
-					url.href = $(this).val();
-					$('#protocolInput').val(url.protocol.slice(0, url.protocol.length-1));
-					if (url.port) {
-						$('#hostInput').val(url.hostname + ":" + url.port);
-					} else {
-						$('#hostInput').val(url.hostname);						
-					}
-					$('#pathInput').val(url.pathname.slice(1, url.pathname.length));
-					$('#queryInput').val(url.search.slice(1, url.search.length));
-				});
+				// $('#readableTimeInput').bind('keyup change', function() {
+				// 	var url = document.createElement('a');
+				// 	url.href = $(this).val();
+				// 	$('#protocolInput').val(url.protocol.slice(0, url.protocol.length-1));
+				// 	if (url.port) {
+				// 		$('#hostInput').val(url.hostname + ":" + url.port);
+				// 	} else {
+				// 		$('#hostInput').val(url.hostname);						
+				// 	}
+				// 	$('#pathInput').val(url.pathname.slice(1, url.pathname.length));
+				// 	$('#queryInput').val(url.search.slice(1, url.search.length));
+				// });
 
 				$('#dateInput').bind('keyup change', function() {
 					$('#readableTimeInput').val(buildTime());
