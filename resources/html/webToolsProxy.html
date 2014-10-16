@@ -99,7 +99,7 @@
 							</table>
 						</div>
 
-						<form class="form" role="form" action="/proxy" method="post" enctype="multipart/form-data">
+						<form id="requestForm" class="form" role="form" action="/proxy" method="post" enctype="multipart/form-data">
 							<div class="form-group">
 								<label for="urlInput"></label>
 								<input type="text" class="form-control" id="urlInput" placeholder="url" name="url" value="{{.InRequest.Url}}">
@@ -428,7 +428,17 @@
 			function saveRequest() {
 				console.log('Save Request');
 
-				// TODO convert request to JSON object?
+				$.post("/saveRequest",
+					{
+						data: $("#requestForm").serialize()
+					},
+					function(data,status) {
+						alert("Data: " + data + "\nStatus: " + status);
+					});
+
+				var xmlhttp = new XMLHttpRequest();
+				xmlhttp.open("POST","/saveRequest",true);
+				xmlhttp.send("sample data");
 			}
 
 			function selectBody(el) {

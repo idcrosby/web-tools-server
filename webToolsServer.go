@@ -77,6 +77,7 @@ func main() {
 	http.HandleFunc("/api", errorHandler(apiHandler))
 	http.HandleFunc("/search", errorHandler(searchHandler))
 	http.HandleFunc("/proxy", errorHandler(proxyHandler))
+	http.HandleFunc("/saveRequest", errorHandler(saveHandler))
 
 	// Serve CSS/JS files
 	http.Handle("/resources/", http.StripPrefix("/resources/", http.FileServer(http.Dir("resources"))))
@@ -308,6 +309,13 @@ func searchHandler(rw http.ResponseWriter, req *http.Request) {
 	t.Execute(rw, responseData)
 }
 
+func saveHandler(rw http.ResponseWriter, req *http.Request) {
+	InfoLog.Println("saveHandler called")
+	req.ParseForm()
+	fmt.Println(req.Form)
+	fmt.Println(req.FormValue("test"))
+}
+
 func proxyHandler(rw http.ResponseWriter, req *http.Request) {
 	InfoLog.Println("proxyHandler called")
 	var responseData = ProxyResponse{}
@@ -392,6 +400,12 @@ func proxyHandler(rw http.ResponseWriter, req *http.Request) {
 	
 	t,_ := template.ParseFiles(proxyHtml)
 	t.Execute(rw, responseData)
+}
+
+func buildProxyRequest(r *http.Request) ProxyRequest {
+
+
+	return ProxyRequest{Url: urlString, Method: method, Headers: headers, Body: string(payload)}	
 }
 
 // Error Handler Wrapper
