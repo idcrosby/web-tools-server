@@ -402,8 +402,52 @@ func proxyHandler(rw http.ResponseWriter, req *http.Request) {
 	t.Execute(rw, responseData)
 }
 
-func buildProxyRequest(r *http.Request) ProxyRequest {
+func buildProxyRequest(req *http.Request) ProxyRequest {
+	urlString := req.FormValue("url")
+	method := req.FormValue("method")
+	reqBody := req.FormValue("reqBody")
+	file, _, err := req.FormFile("file")
 
+	if err != nil {
+		// ignore, assume no file submitted
+	}
+	
+	if len(urlString) < 1 {
+		// fail
+		return ProxyRequest{}
+	}
+
+	var headers map[string][]string
+	headers = make(map[string][]string)
+	for name, values := range req.Form {
+		if subs := strings.Split(name, "headerName"); len(subs) > 1 {
+			if len(values[0]) > 0 {
+				headers[values[0]] = req.Form["headerValue" + subs[1]]
+			}
+		}
+	}
+	var payload []byte
+	if (file != nil) {
+		buf := bytes.NewBuffer(nil)
+		_, err := io.Copy(buf, file)
+		check(err)
+		payload = buf.Bytes()
+	} else if len(reqBody) > 0 {
+		payload = []byte(reqBody)
+	} else {
+		// Read form params and set Content-Type
+		params := url.Values{}
+		for name, values := range req.Form {
+			if subs := strings.Split(name, "formName"); len(subs) > 1 {
+				params.Set(values[0], req.Form["formValue" + subs[1]][0])
+			}
+		}
+		toString := params.Encode()
+		if len(toString) > 0 {
+			payload = []byte(myTools.UrlEncode(toString))
+			headers["Content-Type"] = []string{"application/x-www-form-urlencoded"}
+		}
+	}
 
 	return ProxyRequest{Url: urlString, Method: method, Headers: headers, Body: string(payload)}	
 }
