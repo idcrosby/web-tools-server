@@ -4,6 +4,7 @@ import (
 	"bufio"
 	"bytes"
 	"flag"
+	"encoding/json"
 	"fmt"
 	"github.com/idcrosby/web-tools"
 	"github.com/idcrosby/goProxyGo"
@@ -25,6 +26,7 @@ import (
 var InfoLog *log.Logger
 var ErrorLog *log.Logger
 var Verbose bool
+var requestsWriter *bufio.Writer
 
 // Constants
 
@@ -52,7 +54,6 @@ func main() {
 	flag.Parse()
 
 	// init loggers
-	writer = os.Stdout
 	if len(logFileName) > 0 {
 		logFile, err := os.OpenFile(logFileName, os.O_CREATE|os.O_WRONLY|os.O_APPEND, 0666)
 		if err != nil {
@@ -61,10 +62,21 @@ func main() {
 			defer logFile.Close()
 			writer = bufio.NewWriter(logFile)
 		}
+	} else {
+		writer = os.Stdout
 	}
 
 	InfoLog = log.New(writer, "INFO: ", log.LstdFlags)
 	ErrorLog = log.New(writer, "ERROR: ", log.LstdFlags)
+
+	// open file for saving requests
+	requestsFile, err := os.OpenFile("proxyRequests.txt", os.O_CREATE|os.O_APPEND, 0666)
+	if err != nil {
+		fmt.Printf("Error opening requests file: ", err)
+	} else {
+		defer requestsFile.Close()
+		requestsWriter = bufio.NewWriter(requestsFile)
+	}
 
 	http.HandleFunc("/", errorHandler(defaultHandler))
 	http.HandleFunc("/encoding", errorHandler(encodingHandler))
@@ -311,9 +323,20 @@ func searchHandler(rw http.ResponseWriter, req *http.Request) {
 
 func saveHandler(rw http.ResponseWriter, req *http.Request) {
 	InfoLog.Println("saveHandler called")
-	req.ParseForm()
-	fmt.Println(req.Form)
-	fmt.Println(req.FormValue("test"))
+
+	// req.ParseForm()
+	request := buildProxyRequest(req)
+	jsonData, _ := json.Marshal(request)
+
+	n, err := requestsWriter.Write(jsonData)
+	if err != nil || n < 1 {
+		fmt.Println("Error saving request..")
+	} else {
+		requestsWriter.Write([]byte("\n"))
+		if err = requestsWriter.Flush(); err != nil {
+			panic(err)
+		}
+	}
 }
 
 func proxyHandler(rw http.ResponseWriter, req *http.Request) {
@@ -322,7 +345,6 @@ func proxyHandler(rw http.ResponseWriter, req *http.Request) {
 	urlString := req.FormValue("url")
 	method := req.FormValue("method")
 	reqBody := req.FormValue("reqBody")
-	// file := req.FormValue("file")
 	file, _, err := req.FormFile("file")
 
 	if err != nil {
@@ -355,17 +377,20 @@ func proxyHandler(rw http.ResponseWriter, req *http.Request) {
 			params := url.Values{}
 			for name, values := range req.Form {
 				if subs := strings.Split(name, "formName"); len(subs) > 1 {
+					if len(values[0]) > 0 {
 					params.Set(values[0], req.Form["formValue" + subs[1]][0])
+					}
 				}
 			}
-			toString := params.Encode()
-			if len(toString) > 0 {
+			
+			if len(params) > 0 {
+				toString := params.Encode()
 				payload = []byte(myTools.UrlEncode(toString))
 				headers["Content-Type"] = []string{"application/x-www-form-urlencoded"}
 			}
 		}
 		bodyReader = bytes.NewReader(payload)
-		fmt.Println("Request body = " + string(payload))
+
 		request := goProxy.DefaultGoProxy.BuildRequest(thisUrl, method, bodyReader, headers)
 		if Verbose {
 			InfoLog.Println(request)
@@ -414,6 +439,7 @@ func buildProxyRequest(req *http.Request) ProxyRequest {
 	
 	if len(urlString) < 1 {
 		// fail
+		fmt.Println("no url?")
 		return ProxyRequest{}
 	}
 

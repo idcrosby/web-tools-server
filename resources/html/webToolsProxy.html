@@ -429,16 +429,10 @@
 				console.log('Save Request');
 
 				$.post("/saveRequest",
-					{
-						data: $("#requestForm").serialize()
-					},
+					$("#requestForm").serialize(),
 					function(data,status) {
 						alert("Data: " + data + "\nStatus: " + status);
 					});
-
-				var xmlhttp = new XMLHttpRequest();
-				xmlhttp.open("POST","/saveRequest",true);
-				xmlhttp.send("sample data");
 			}
 
 			function selectBody(el) {
