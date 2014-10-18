@@ -26,7 +26,6 @@ import (
 var InfoLog *log.Logger
 var ErrorLog *log.Logger
 var Verbose bool
-var requestsWriter *bufio.Writer
 
 // Constants
 
@@ -69,15 +68,6 @@ func main() {
 	InfoLog = log.New(writer, "INFO: ", log.LstdFlags)
 	ErrorLog = log.New(writer, "ERROR: ", log.LstdFlags)
 
-	// open file for saving requests
-	requestsFile, err := os.OpenFile("proxyRequests.txt", os.O_CREATE|os.O_APPEND, 0666)
-	if err != nil {
-		fmt.Printf("Error opening requests file: ", err)
-	} else {
-		defer requestsFile.Close()
-		requestsWriter = bufio.NewWriter(requestsFile)
-	}
-
 	http.HandleFunc("/", errorHandler(defaultHandler))
 	http.HandleFunc("/encoding", errorHandler(encodingHandler))
 	http.HandleFunc("/validateJson", errorHandler(validateJsonHandler))
@@ -90,6 +80,7 @@ func main() {
 	http.HandleFunc("/search", errorHandler(searchHandler))
 	http.HandleFunc("/proxy", errorHandler(proxyHandler))
 	http.HandleFunc("/saveRequest", errorHandler(saveHandler))
+	http.HandleFunc("/loadRequests", errorHandler(loadRequestsHandler))
 
 	// Serve CSS/JS files
 	http.Handle("/resources/", http.StripPrefix("/resources/", http.FileServer(http.Dir("resources"))))
@@ -324,7 +315,19 @@ func searchHandler(rw http.ResponseWriter, req *http.Request) {
 func saveHandler(rw http.ResponseWriter, req *http.Request) {
 	InfoLog.Println("saveHandler called")
 
-	// req.ParseForm()
+	// open file for saving requests
+	requestsFile, err := os.OpenFile("proxyRequests.txt", os.O_CREATE|os.O_APPEND, 0666)
+	if err != nil {
+		fmt.Printf("Error opening requests file: ", err)
+		// TODO return error
+		rw.WriteHeader(500)
+		return
+	}
+
+	defer requestsFile.Close()
+	requestsWriter := bufio.NewWriter(requestsFile)
+
+
 	request := buildProxyRequest(req)
 	jsonData, _ := json.Marshal(request)
 
@@ -337,6 +340,35 @@ func saveHandler(rw http.ResponseWriter, req *http.Request) {
 			panic(err)
 		}
 	}
+}
+
+func loadRequestsHandler(rw http.ResponseWriter, req *http.Request) {
+	InfoLog.Println("loadRequestsHandler called")
+
+	requestsFile, err := os.Open("proxyRequests.txt")
+	if err != nil {
+		fmt.Printf("Error opening requests file: ", err)
+		// TODO return error
+		rw.WriteHeader(500)
+		return
+	}
+
+	reader := bufio.NewReader(requestsFile)
+	scanner := bufio.NewScanner(reader)
+
+	proxyRequests := []ProxyRequest{}
+	var proxyRequest ProxyRequest
+
+	for scanner.Scan() {
+		err := json.Unmarshal(scanner.Bytes(), &proxyRequest)
+		if err != nil {
+			fmt.Println("Unable to read Json data.")
+		}
+		proxyRequests = append(proxyRequests, proxyRequest)
+	}
+	jsonData, _ := json.Marshal(proxyRequests)
+	rw.WriteHeader(200)
+	rw.Write(jsonData)
 }
 
 func proxyHandler(rw http.ResponseWriter, req *http.Request) {

@@ -86,16 +86,16 @@
 									<input type="checkbox" name="log"> Log Data
 							</label>
 							<table class="table table-striped collapse" id="requestsTable">
-								<tr id="row0">
-									<td class="col-md-3"><input class="form-control" type="text" name="requestName" placeholder="name"/></td>
-									<td class="col-md-12"><input class="form-control" type="text" name="requestUrl" placeholder="url"/></td>
+								<!-- <tr id="row0">
+									<td class="col-md-12"><input id="requestName" class="form-control" type="text" name="requestName" placeholder="name"/></td>
+									<td><input id="requestObject" class="form-control" type="hidden" name="requestUrl" placeholder="url"/></td>
 									<td class="col-md-1"><button name="delete0" type="button" class="btn btn-default" onclick="removeRequest(this)">
 										<span class="glyphicon glyphicon-remove"></span>
 									</button></td>
 									<td class="col-md-1"><button name="play0" type="button" class="btn btn-default" onclick="applyRequest(this)">
 										<span class="glyphicon glyphicon-play"></span>
 									</button></td>
-								</tr>
+								</tr> -->
 							</table>
 						</div>
 
@@ -324,6 +324,62 @@
 				$('#queryInput').bind('keyup change', function() {
 					$('#urlInput').val(buildUrl());
 				});
+
+				// Load Saved Requests
+				$.get("/loadRequests",
+					function(data) {
+						var jsonData = JSON.parse(data);
+						for (var i = 0; i < jsonData.length; i++) {
+							console.log(jsonData[i].Url);
+							addSavedRequest(jsonData[i]);
+						}
+					});
+			}
+
+			function addSavedRequest(request) {
+				var table = document.getElementById("requestsTable");
+				var rowCount = table.rows.length;
+				var row = table.insertRow(rowCount);
+				row.id = "row" + rowCount;
+
+				var nameCell = row.insertCell(0);
+				nameCell.className = "col-md-12"
+				var el1 = document.createElement("input");
+				el1.type = "text";
+				el1.id = "requestName" + rowCount;
+				el1.className = "form-control";
+				el1.value = request.Url
+				nameCell.appendChild(el1);
+
+				var valueCell = row.insertCell(1);
+				var el2 = document.createElement("input");
+				el2.type = "hidden";
+				el2.id = "requestObject" + rowCount;
+				el2.className = "form-control";
+				el2.value = JSON.stringify(request)
+				valueCell.appendChild(el2);
+
+				var removeCell = row.insertCell(2);
+				removeCell.className = "col-md-1"
+				var el3 = document.createElement("button");
+				el3.type = "button";
+				el3.className="btn btn-default"
+				el3.setAttribute('onclick', 'removeRequest(this)');
+				var btnSpan = document.createElement("span");
+				btnSpan.className = "glyphicon glyphicon-remove";
+				el3.appendChild(btnSpan);
+				removeCell.appendChild(el3);
+
+				var removeCell = row.insertCell(2);
+				removeCell.className = "col-md-1"
+				var el3 = document.createElement("button");
+				el3.type = "button";
+				el3.className="btn btn-default"
+				el3.setAttribute('onclick', 'applyRequest(this)');
+				var btnSpan = document.createElement("span");
+				btnSpan.className = "glyphicon glyphicon-play";
+				el3.appendChild(btnSpan);
+				removeCell.appendChild(el3);
 			}
 
 			function buildUrl() {
@@ -340,6 +396,7 @@
 				nameCell.className = "col-md-3"
 				var el1 = document.createElement("input");
 				el1.type = "text";
+				el1.id = "headerName" + rowCount;
 				el1.name = "headerName" + rowCount;
 				el1.className = "form-control";
 				el1.placeholder = "name";
@@ -349,6 +406,7 @@
 				valueCell.className = "col-md-12"
 				var el2 = document.createElement("input");
 				el2.type = "text";
+				el2.id = "headerValue" + rowCount;
 				el2.name = "headerValue" + rowCount;
 				el2.className = "form-control";
 				el2.placeholder = "value";
@@ -382,7 +440,28 @@
 			}
 
 			function applyRequest(el) {
+				// var childs = el.parentNode.parentNode.children;
+				var row = el.parentNode.parentNode.id.substring(el.parentNode.parentNode.id.length-1);
+				var obj = document.getElementById("requestObject" + row);
+				var json = JSON.parse(obj.value)
 
+				$('#urlInput').val(json.Url);
+				document.getElementById(json.Method + 'Radio').checked = true;
+				$('#bodyArea').val(json.Body);
+				var headers = json.Headers;
+
+				var headerCount = 0;
+				if (headers) {
+					var keys = Object.keys(headers);
+					for (var i = 0; i < keys.length; i++) {
+						if (i > 0) {
+							addHeader();
+						}
+						document.getElementsByName("headerName" + headerCount)[0].value = keys[0];
+						document.getElementsByName("headerValue" + headerCount)[0].value = json.Headers[keys[0]];
+						headerCount++;
+					}
+				}
 			}
 
 			function removeRequest(el) {
