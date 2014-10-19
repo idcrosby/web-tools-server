@@ -86,16 +86,6 @@
 									<input type="checkbox" name="log"> Log Data
 							</label>
 							<table class="table table-striped collapse" id="requestsTable">
-								<!-- <tr id="row0">
-									<td class="col-md-12"><input id="requestName" class="form-control" type="text" name="requestName" placeholder="name"/></td>
-									<td><input id="requestObject" class="form-control" type="hidden" name="requestUrl" placeholder="url"/></td>
-									<td class="col-md-1"><button name="delete0" type="button" class="btn btn-default" onclick="removeRequest(this)">
-										<span class="glyphicon glyphicon-remove"></span>
-									</button></td>
-									<td class="col-md-1"><button name="play0" type="button" class="btn btn-default" onclick="applyRequest(this)">
-										<span class="glyphicon glyphicon-play"></span>
-									</button></td>
-								</tr> -->
 							</table>
 						</div>
 
@@ -330,7 +320,6 @@
 					function(data) {
 						var jsonData = JSON.parse(data);
 						for (var i = 0; i < jsonData.length; i++) {
-							console.log(jsonData[i].Url);
 							addSavedRequest(jsonData[i]);
 						}
 					});
@@ -440,7 +429,9 @@
 			}
 
 			function applyRequest(el) {
-				// var childs = el.parentNode.parentNode.children;
+
+				clearFields();
+
 				var row = el.parentNode.parentNode.id.substring(el.parentNode.parentNode.id.length-1);
 				var obj = document.getElementById("requestObject" + row);
 				var json = JSON.parse(obj.value)
@@ -462,6 +453,8 @@
 						headerCount++;
 					}
 				}
+
+				methodSelect();
 			}
 
 			function removeRequest(el) {
@@ -492,7 +485,9 @@
 				var elements = document.getElementsByTagName("input");
 				for (var i=0; i < elements.length; i++) {
   					if (elements[i].type == "text") {
-    					elements[i].value = "";
+  						if (elements[i].id.indexOf("requestName") == -1) {
+    						elements[i].value = "";
+    					}
 			  		}
 				}
 				$('#bodyArea').val('');

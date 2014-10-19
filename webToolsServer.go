@@ -410,7 +410,7 @@ func proxyHandler(rw http.ResponseWriter, req *http.Request) {
 			for name, values := range req.Form {
 				if subs := strings.Split(name, "formName"); len(subs) > 1 {
 					if len(values[0]) > 0 {
-					params.Set(values[0], req.Form["formValue" + subs[1]][0])
+						params.Set(values[0], req.Form["formValue" + subs[1]][0])
 					}
 				}
 			}
@@ -497,7 +497,9 @@ func buildProxyRequest(req *http.Request) ProxyRequest {
 		params := url.Values{}
 		for name, values := range req.Form {
 			if subs := strings.Split(name, "formName"); len(subs) > 1 {
-				params.Set(values[0], req.Form["formValue" + subs[1]][0])
+				if len(values[0]) > 0 {
+					params.Set(values[0], req.Form["formValue" + subs[1]][0])
+				}
 			}
 		}
 		toString := params.Encode()
