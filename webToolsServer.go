@@ -80,6 +80,7 @@ func main() {
 	http.HandleFunc("/search", errorHandler(searchHandler))
 	http.HandleFunc("/proxy", errorHandler(proxyHandler))
 	http.HandleFunc("/saveRequest", errorHandler(saveHandler))
+	http.HandleFunc("/removeRequest", errorHandler(removeRequestHandler))
 	http.HandleFunc("/loadRequests", errorHandler(loadRequestsHandler))
 
 	// Serve CSS/JS files
@@ -327,7 +328,6 @@ func saveHandler(rw http.ResponseWriter, req *http.Request) {
 	defer requestsFile.Close()
 	requestsWriter := bufio.NewWriter(requestsFile)
 
-
 	request := buildProxyRequest(req)
 	jsonData, _ := json.Marshal(request)
 
@@ -340,6 +340,10 @@ func saveHandler(rw http.ResponseWriter, req *http.Request) {
 			panic(err)
 		}
 	}
+}
+
+func removeRequestHandler(rw http.ResponseWriter, req *http.Request) {
+	// implement
 }
 
 func loadRequestsHandler(rw http.ResponseWriter, req *http.Request) {

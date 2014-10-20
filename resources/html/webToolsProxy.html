@@ -461,6 +461,16 @@
 				try {
 					var rowId = el.parentNode.parentNode.id;
 					var table = document.getElementById("requestsTable");
+					
+					// Remove saved request from file
+					var row = rowId.substring(el.parentNode.parentNode.id.length-1);
+					var obj = document.getElementById("requestObject" + row);
+					$.post("/removeRequest",
+						JSON.parse(obj.value),
+						function(data,status) {
+							console.log("Data: " + data + "\nStatus: " + status);
+						});
+
 					for (var i = 0, row; row = table.rows[i]; i++) {
 						if (row.id === rowId) {
 							table.deleteRow(i);
