@@ -26,6 +26,7 @@ import (
 var InfoLog *log.Logger
 var ErrorLog *log.Logger
 var Verbose bool
+var RequestId int
 
 // Constants
 
@@ -343,7 +344,35 @@ func saveHandler(rw http.ResponseWriter, req *http.Request) {
 }
 
 func removeRequestHandler(rw http.ResponseWriter, req *http.Request) {
-	// implement
+	InfoLog.Println("removeRequestHandler called")
+	deleteId, _ := strconv.Atoi(req.FormValue("remove"))
+	requestsFile, err := os.Open("proxyRequests.txt")
+	if err != nil {
+		fmt.Printf("Error opening requests file: ", err)
+		// TODO return error
+		rw.WriteHeader(500)
+		return
+	}
+
+	reader := bufio.NewReader(requestsFile)
+	scanner := bufio.NewScanner(reader)
+
+	proxyRequests := []ProxyRequest{}
+	var proxyRequest ProxyRequest
+
+	for scanner.Scan() {
+		err := json.Unmarshal(scanner.Bytes(), &proxyRequest)
+		if err != nil {
+			fmt.Println("Unable to read Json data.")
+		}
+		if proxyRequest.Id == deleteId {
+			// delete
+		}
+		proxyRequests = append(proxyRequests, proxyRequest)
+	}
+	jsonData, _ := json.Marshal(proxyRequests)
+	rw.WriteHeader(200)
+	rw.Write(jsonData)
 }
 
 func loadRequestsHandler(rw http.ResponseWriter, req *http.Request) {
@@ -513,7 +542,8 @@ func buildProxyRequest(req *http.Request) ProxyRequest {
 		}
 	}
 
-	return ProxyRequest{Url: urlString, Method: method, Headers: headers, Body: string(payload)}	
+	RequestId++
+	return ProxyRequest{Id: RequestId, Url: urlString, Method: method, Headers: headers, Body: string(payload)}	
 }
 
 // Error Handler Wrapper
@@ -612,6 +642,8 @@ type ProxyResponse struct {
 }
 
 type ProxyRequest struct {
+	// TODO change this to a UUID
+	Id int
 	Url string
 	Method string
 	Headers map[string][]string
