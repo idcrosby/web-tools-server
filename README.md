@@ -41,6 +41,7 @@ Create hash values in either MD5 or SHA-1 format.
 - Handle Time Zone input
 - Implement search
 - Enhance Proxy
+	- generate sig
 	- delete saved response
 	- option to add Content-Length header
 	- save option (entire request and response, to file?)

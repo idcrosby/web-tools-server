@@ -83,7 +83,7 @@
 								
 							</label>
 							<label class="pull-right">
-									<input type="checkbox" name="log"> Log Data
+									<input id="logDataCheckbox" type="checkbox" name="log"> Log Data
 							</label>
 							<table class="table table-striped collapse" id="requestsTable">
 							</table>
@@ -277,12 +277,17 @@
 					$('#requestHeaders').attr('rows', lines.length);
 
 					if ("{{.OutBody}}" != "") {
-						var parsed = JSON.parse({{.OutBody}})
-						$('#formattedResponseText').val(JSON.stringify(parsed, null, "\t"));
+						try {
+							var parsed = JSON.parse({{.OutBody}});
+							$('#formattedResponseText').val(JSON.stringify(parsed, null, "\t"));
+							lines = $('#formattedResponseText').val().split("\n");
+							$('#formattedResponseText').attr('rows', lines.length + 1);
+						}
+						catch(err) {
+							// Show Raw response tab
+							$('.nav-tabs a[href="#rawResponse"]').tab('show');
+						}
 					}
-
-					lines = $('#formattedResponseText').val().split("\n");
-					$('#formattedResponseText').attr('rows', lines.length + 1);
 				}
 
 				$('#urlInput').bind('keyup change', function() {
