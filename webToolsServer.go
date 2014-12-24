@@ -42,6 +42,7 @@ var contactHtml = "resources/html/webToolsContact.html"
 var apiHtml = "resources/html/webToolsAPI.html"
 var searchHtml = "resources/html/webToolsSearch.html"
 var proxyHtml = "resources/html/webToolsProxy.html"
+var cryptoHtml = "resources/html/webToolsCrypto.html"
 
 func main() {
 
@@ -83,6 +84,7 @@ func main() {
 	http.HandleFunc("/saveRequest", errorHandler(saveHandler))
 	http.HandleFunc("/removeRequest", errorHandler(removeRequestHandler))
 	http.HandleFunc("/loadRequests", errorHandler(loadRequestsHandler))
+	http.HandleFunc("/crypto", errorHandler(cryptoHandler))
 
 	// Serve CSS/JS files
 	http.Handle("/resources/", http.StripPrefix("/resources/", http.FileServer(http.Dir("resources"))))
@@ -402,6 +404,21 @@ func loadRequestsHandler(rw http.ResponseWriter, req *http.Request) {
 	jsonData, _ := json.Marshal(proxyRequests)
 	rw.WriteHeader(200)
 	rw.Write(jsonData)
+}
+
+func cryptoHandler(rw http.ResponseWriter, req *http.Request) {
+	InfoLog.Println("cryptoHandler called")
+
+	var responseData = ResponseData{}
+	algorithm := req.FormValue("algorithm")
+	if len(algorithm) != 0 {
+		keyPair := myTools.GenerateKeyPair(algorithm)
+		responseData = ResponseData{Output: string(keyPair), Field: "CryptoDiv", Valid: true}
+	}
+
+	var resultTemplate, err = template.ParseFiles(cryptoHtml)
+	check(err)
+	resultTemplate.Execute(rw, responseData)
 }
 
 func proxyHandler(rw http.ResponseWriter, req *http.Request) {
