@@ -73,20 +73,47 @@
 		 	<div class="jumbotron">
 				<div class="panel panel-primary" id="CryptoDiv">
 					<div class="panel-heading">
-						<h3 class="panel-title">Key Pair Generation</h3>
+						<h3 class="panel-title">RSA Key Pair Generation</h3>
 					</div>
 					<div class="panel-body" method="get">
 						<form id="KeyPairForm" class="form" role="form" action="/crypto">
 							<div class="form-group">
-								<div class="btn-group form-group">
+								<!-- <div class="btn-group form-group">
 									<button id="rsaBtn" type="button" class="btn btn-default active" onClick="selectAlgorithm(this)">RSA</button>
 									<button id="otherBtn" type="button" class="btn btn-default" onClick="selectAlgorithm(this)">Other</button>
-								</div>
+								</div> -->
 								<input id="algorithmInput" type="hidden" name="algorithm" value="RSA">
+								<p>
+								<div class="btn-group" data-toggle="buttons">
+									<label class="btn btn-default active">
+										<input type="radio" name="format" id="sshRsa" value="ssh-rsa">SSH-RSA
+										<!-- <button id="sshRsaBtn" type="button" class="btn btn-default active">SSH-RSA</button> -->
+									</label>
+									<label class="btn btn-default">
+										<input type="radio" name="format" id="pkcs" value="pkcs">PKCS#1
+										<!-- <button id="pkcsBtn" type="button" class="btn btn-default">PKCS#1</button> -->
+									</label>
+									<label class="btn btn-default">
+										<input type="radio" name="format" id="x509" value="x509">x.509
+										<!-- <button id="x509Btn" type="button" class="btn btn-default">x.509</button> -->
+									</label>
+								</div>
+								<div class="checkbox">
+									<label>
+										<input type="checkbox" name="endoded" id="encodedCheck" value="true"> Encoded Response
+									</label>
+								</div>
+								<div class="checkbox">
+									<label>
+										<input type="checkbox" name="hidePrivate" id="hideCheck" value="hide"> Hide Private Key
+									</label>
+								</div>
 							</div>
 							<button type="submit" class="btn btn-primary btn-default">Generate</button>
 						</form>
-						<textarea id="keyPairResponse" class="form-control collapse" name="ResultArea" disabled rows="1" cols="50">{{.Output}}</textarea>
+						<textarea id="keyPairResponse" class="form-control collapse" name="ResultArea" disabled rows="20" cols="50">{{.Output}}</textarea>
+						<br>
+						<button id="downloadBtn" class="btn btn-primary btn-default collapse" onClick="downloadKey()">Download Key</button>
 					</div>
 				</div>
 			</div> <!-- /jumbotron -->
@@ -99,6 +126,8 @@
 					var id = "KeyPairForm";
 					var el;
 						$('#keyPairResponse').collapse('show');
+						$('#downloadBtn').collapse('show');
+
 						el = document.getElementById("rsaBtn");
 						selectAlgorithm(el);
 
@@ -124,6 +153,11 @@
 					algorithmType.value = 'Other';
 				}
 			}
+
+			function downloadKey() {
+				// TODO implement..
+			}
+			
 		</script>
 		<!-- Bootstrap core JavaScript
     	================================================== -->

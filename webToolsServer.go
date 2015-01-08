@@ -411,8 +411,10 @@ func cryptoHandler(rw http.ResponseWriter, req *http.Request) {
 
 	var responseData = ResponseData{}
 	algorithm := req.FormValue("algorithm")
+	format := req.FormValue("format")
+
 	if len(algorithm) != 0 {
-		keyPair := myTools.GenerateKeyPair(algorithm)
+		keyPair := myTools.GenerateKeyPair(algorithm, format)
 		responseData = ResponseData{Output: string(keyPair), Field: "CryptoDiv", Valid: true}
 	}
 
