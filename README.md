@@ -33,6 +33,8 @@ Create hash values in either MD5 or SHA-1 format.
 
 ## TODO List
 
+- Add Admin login.
+- Ping/latency tool
 - Expand JSON Validator
 	- Add dynamic JSON viewer, for parsing, dynamic filtering, templating
 	- Json Compare

@@ -58,7 +58,7 @@ func main() {
 	if len(logFileName) > 0 {
 		logFile, err := os.OpenFile(logFileName, os.O_CREATE|os.O_WRONLY|os.O_APPEND, 0666)
 		if err != nil {
-			fmt.Printf("Error opening log file: ", err)
+			fmt.Println("Error opening log file: ", err)
 		} else {
 			defer logFile.Close()
 			writer = bufio.NewWriter(logFile)
@@ -322,7 +322,7 @@ func saveHandler(rw http.ResponseWriter, req *http.Request) {
 	// open file for saving requests
 	requestsFile, err := os.OpenFile("proxyRequests.txt", os.O_CREATE|os.O_APPEND, 0666)
 	if err != nil {
-		fmt.Printf("Error opening requests file: ", err)
+		fmt.Println("Error opening requests file: ", err)
 		// TODO return error
 		rw.WriteHeader(500)
 		return
@@ -350,7 +350,7 @@ func removeRequestHandler(rw http.ResponseWriter, req *http.Request) {
 	deleteId, _ := strconv.Atoi(req.FormValue("remove"))
 	requestsFile, err := os.Open("proxyRequests.txt")
 	if err != nil {
-		fmt.Printf("Error opening requests file: ", err)
+		fmt.Println("Error opening requests file: ", err)
 		// TODO return error
 		rw.WriteHeader(500)
 		return
@@ -382,7 +382,7 @@ func loadRequestsHandler(rw http.ResponseWriter, req *http.Request) {
 
 	requestsFile, err := os.Open("proxyRequests.txt")
 	if err != nil {
-		fmt.Printf("Error opening requests file: ", err)
+		fmt.Println("Error opening requests file: ", err)
 		// TODO return error
 		rw.WriteHeader(500)
 		return
