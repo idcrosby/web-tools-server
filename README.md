@@ -36,6 +36,7 @@ Create hash values in either MD5 or SHA-1 format.
 - Expand JSON Validator
 	- Add dynamic JSON viewer, for parsing, dynamic filtering, templating
 	- Json Compare
+- Add JSON Merge tool
 - Add automated tests
 - Send feedback as email / store in DB
 - Handle Time Zone input
